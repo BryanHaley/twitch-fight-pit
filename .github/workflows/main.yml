@@ -22,5 +22,5 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: zingo-fight-pit-win
-          path: dist/zingo-fight-pit.exe
+          path: dist/zingo-fight-pit/zingo-fight-pit.exe
       
