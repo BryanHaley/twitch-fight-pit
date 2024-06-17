@@ -62,16 +62,16 @@ async def attack_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
-
-    if cmd.user.name not in chatters:
-        main_funcs["add_chatter"](cmd.user.name)
-        chatters[cmd.user.name] = {"health": 20000, "defended": False}
-    if cmd.parameter not in chatters:
-        await cmd.reply(f'{cmd.user.name} tried to squash {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
     
     if len(cmd.parameter) == 0:
-        await cmd.reply(f"{cmd.user.name} attacked thin air! Maybe they're confused?")
+        await cmd.reply(f"{cmd.user.name} squashed a zingo! zingo37Foot zingo37Foot zingo37Foot")
     else:
+        if cmd.user.name not in chatters:
+            main_funcs["add_chatter"](cmd.user.name)
+            chatters[cmd.user.name] = {"health": 20000, "defended": False}
+        if cmd.parameter not in chatters:
+            await cmd.reply(f'{cmd.user.name} tried to squash {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            
         damage = random.randint(100,9999)
         if chatters[cmd.parameter]["defended"]:
             damage = int(damage/2)
@@ -118,16 +118,16 @@ async def defend_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
-
-    if cmd.user.name not in chatters:
-        main_funcs["add_chatter"](cmd.user.name)
-        chatters[cmd.user.name] = {"health": 20000, "defended": False}
-    if cmd.parameter not in chatters:
-        await cmd.reply(f'{cmd.user.name} tried to defend {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
     
     if len(cmd.parameter) == 0:
-        await cmd.reply(f"{cmd.user.name} defended no one! Maybe they're confused?")
+        await cmd.reply(f"{cmd.user.name} defended a zingo! zingoW")
     else:
+        if cmd.user.name not in chatters:
+            main_funcs["add_chatter"](cmd.user.name)
+            chatters[cmd.user.name] = {"health": 20000, "defended": False}
+        if cmd.parameter not in chatters:
+            await cmd.reply(f'{cmd.user.name} tried to defend {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+
         success = True if random.randint(0,3) != 0 else False
 
         if not success:
@@ -149,16 +149,16 @@ async def heal_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
-
-    if cmd.user.name not in chatters:
-        main_funcs["add_chatter"](cmd.user.name)
-        chatters[cmd.user.name] = {"health": 20000, "defended": False}
-    if cmd.parameter not in chatters:
-        await cmd.reply(f'{cmd.user.name} tried to heal {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
     
     if len(cmd.parameter) == 0:
-        await cmd.reply(f"{cmd.user.name} healed no one! Maybe they're confused?")
+        await cmd.reply(f"{cmd.user.name} healed a zingo! Petthezingo")
     else:
+        if cmd.user.name not in chatters:
+            main_funcs["add_chatter"](cmd.user.name)
+            chatters[cmd.user.name] = {"health": 20000, "defended": False}
+        if cmd.parameter not in chatters:
+            await cmd.reply(f'{cmd.user.name} tried to heal {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+
         success = True if random.randint(0,2) != 0 else False
 
         if not success:
