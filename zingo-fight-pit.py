@@ -4,6 +4,7 @@ import time
 import threading
 import json
 import asyncio
+import os
 import traceback
 from chatter import Chatter
 from twitch import run_twitch_handler, set_funcs
@@ -13,10 +14,24 @@ LAST_COMMAND_TIME = time.time()
 
 context = {}
 chatters = {}
+SpriteSheets = {}
 background = 0, 255, 0
 
 def start_twitch_handler_thread(context):
     asyncio.run(run_twitch_handler(context))
+
+def load_sheets_from_folder():
+    global SpriteSheets
+    files = os.listdir("skins")
+    for file in files:
+        file = os.path.join("skins", file)
+        try:
+            if os.path.exists(file) and os.path.isfile(file) and (file[-3:] == "png" or file[-3:] == "PNG"):
+                spritesheet_name = os.path.basename(file)[:-4]
+                print("Loading spritesheet: {}".format(spritesheet_name))
+                SpriteSheets[spritesheet_name] = pygame.image.load(file)
+        except:
+            print(traceback.format_exc())
 
 def read_settings():
     global background
@@ -66,6 +81,8 @@ def set_chatter_defended(chatter, defended):
 
 if __name__ == "__main__":
     read_settings()
+    load_sheets_from_folder()
+    context["spritesheets"] = SpriteSheets
 
     # Interface the twitch thread communicates through
     set_funcs({
@@ -102,7 +119,7 @@ if __name__ == "__main__":
         if time.time() < LAST_COMMAND_TIME+RENDERING_TIMEOUT_SECONDS:
             for chatter in chatters:
                 screen.blit(chatters[chatter].get_name_text(), (chatters[chatter].get_rect().centerx-(chatters[chatter].get_name_text().get_rect().width/2), chatters[chatter].get_rect().top - 20))
-                screen.blit(pygame.transform.flip(chatters[chatter].get_img(), chatters[chatter].get_flip(), False), chatters[chatter].get_rect())
+                screen.blit(pygame.transform.flip(chatters[chatter].get_img(), chatters[chatter].get_flip(), False), chatters[chatter].get_rect(), chatters[chatter].get_crop_square())
                 if chatters[chatter].get_defended():
                     screen.blit(bubble_img, (chatters[chatter].get_rect().centerx-(bubble_img.get_rect().width/2), chatters[chatter].get_rect().centery-(bubble_img.get_rect().height/2)))
         pygame.display.flip()

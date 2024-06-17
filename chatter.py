@@ -37,7 +37,7 @@ class Chatter:
         self.counter_attack = False
         self.faint = False
         self.defended = False
-        self.animation = Animation()
+        self.animation = Animator(context)
         self.set_schedule("WANDER")
     
     def get_name_text(self):
@@ -209,22 +209,23 @@ class Chatter:
         if self.counter_attack:
             self.play_animation_as_task("COUNTER", 2)
         else:
-            self.play_animation_as_task("DAMAGED", 2)
+            self.play_animation_as_task("DAMAGE", 2)
         
         if self.faint and self.task_status == "FINISHED":
             self.set_schedule("FAINT")
     
     def task_get_healed(self):
-        self.play_animation_as_task("GET_HEALED", 2)
+        self.play_animation_as_task("HEALED", 2)
     
     def task_get_defended(self):
         self.set_defended(True)
-        self.play_animation_as_task("GET_DEFENDED", 2)
+        self.play_animation_as_task("DEFENDED", 2)
     
     def play_animation_as_task(self, anim, wait_time):
         self.velocity = [0,0]
         if self.task_status == "STARTING":
             self.wait_end_time = time.time() + wait_time
+            self.animation.set_animation_frame(0)
             self.animation.set_animation(anim)
             self.task_status = "RUNNING"
         elif time.time() >= self.wait_end_time:
@@ -235,6 +236,9 @@ class Chatter:
     
     def get_img(self):
         return self.animation.get_img()
+    
+    def get_crop_square(self):
+        return self.animation.get_crop_square()
 
     def get_rect(self):
         return self.rect
@@ -252,27 +256,55 @@ class Chatter:
         self.velocity[1] = y
 
 
-class Animation:
-
-    def __init__(self):
+class Animator:
+    def __init__(self, context, skin="default"):
         self.animations = {
-            "IDLE": pygame.image.load("smile.png"),
-            "ATTACK": pygame.image.load("squash.png"),
-            "DAMAGED": pygame.image.load("squashed.png"),
-            "COUNTER": pygame.image.load("rage.png"),
-            "HEAL": pygame.image.load("love.png"),
-            "GET_HEALED": pygame.image.load("actup.png"),
-            "DEFEND": pygame.image.load("joey.png"),
-            "GET_DEFENDED": pygame.image.load("wow.png"),
-            "FAINT": pygame.image.load("melty.png")
+            "IDLE": 0,
+            "IDLE_SPECIAL": 1,
+            "WALK": 2,
+            "RUN": 3,
+            "ATTACK": 4,
+            "COUNTER": 5,
+            "CRITICAL": 6,
+            "DAMAGE": 7,
+            "DEFEND": 8,
+            "DEFENDED": 9,
+            "HEAL": 10,
+            "HEALED": 11,
+            "PET": 12,
+            "PETTED": 13,
+            "FAINT": 14,
+            "RESERVED2": 15
         }
         self.current_animation = "IDLE"
+        self.current_frame = 0
+        self.next_frame_time = time.time() + 1/12
+        self.img = context["spritesheets"][skin]
+        self.crop = (0,0,0,0)
     
     def set_animation(self, anim):
         self.current_animation = anim
+    
+    def get_animation_frame(self):
+        return self.current_frame
+    
+    def set_animation_frame(self, frame):
+        self.current_frame = frame
     
     def get_animation(self):
         return self.current_animation
     
     def get_img(self):
-        return self.animations[self.current_animation]
+        return self.img
+    
+    def get_crop_square(self):
+        if time.time() > self.next_frame_time:
+            self.current_frame += 1
+            self.next_frame_time = time.time() + 1/12
+            if self.current_frame >= 12:
+                self.current_frame = 0
+        crop_x1 = 128 * self.current_frame
+        crop_y1 = 128 * self.animations[self.current_animation]
+        crop_x2 = 128
+        crop_y2 = 128
+        return crop_x1, crop_y1, crop_x2, crop_y2
