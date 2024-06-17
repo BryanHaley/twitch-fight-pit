@@ -19,7 +19,7 @@ jobs:
       - name: Package overlay application
         run: pyinstaller zingo-fight-pit.py
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: zingo-fight-pit-win
           path: dist/zingo-fight-pit/zingo-fight-pit.exe
