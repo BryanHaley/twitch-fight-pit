@@ -82,7 +82,7 @@ class Chatter:
         self.action_on_actor(defend_target, "DEFEND")
 
     def action_on_actor(self, target, schedule):
-        self.target = target.get_rect().centerx + (100 if random.randint(0,1) == 0 else -100)
+        self.target = target.get_rect().centerx + (64 if random.randint(0,1) == 0 else -64)
         self.look_target = target.get_rect().centerx
         self.actor_target = target
         self.set_schedule(schedule)
