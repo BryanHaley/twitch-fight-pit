@@ -145,7 +145,7 @@ if __name__ == "__main__":
                 for chatter in chatters:
                     if chatters[chatter].get_defended():
                         screen.blit(bubble_img, (chatters[chatter].get_rect().centerx-(bubble_img.get_rect().width/2), chatters[chatter].get_rect().centery-(bubble_img.get_rect().height/2)))
-                    screen.blit(chatters[chatter].get_name_text(), (chatters[chatter].get_rect().centerx-(chatters[chatter].get_name_text().get_rect().width/2), chatters[chatter].get_rect().top - 20))
+                    screen.blit(chatters[chatter].get_name_text(), (chatters[chatter].get_rect().centerx-(chatters[chatter].get_name_text().get_rect().width/2), chatters[chatter].get_rect().top - 20 - chatters[chatter].get_text_offset()))
                     screen.blit(pygame.transform.flip(chatters[chatter].get_img(), chatters[chatter].get_flip(), False), chatters[chatter].get_rect(), chatters[chatter].get_crop_square())
             except:
                 print(traceback.format_exc())

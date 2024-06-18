@@ -2,6 +2,8 @@ import pygame
 import random
 import time
 
+TEXT_OFFSET = 0
+
 AI_SCHEDULE_STARTS = {
     "IDLE": "IDLE",
     "WAIT": "IDLE",
@@ -21,11 +23,15 @@ AI_SCHEDULE_STARTS = {
 class Chatter:
 
     def __init__(self, context, name):
+        global TEXT_OFFSET
         self.xmax = context["screen_size"][0]-140
         self.rect = pygame.Rect(0,0,128,128)
         self.rect.x = random.randrange(140, self.xmax)
         self.rect.y = 400
         self.name_text = context["font"].render(name, True, (0, 0, 0))
+        self.text_offset = TEXT_OFFSET
+        TEXT_OFFSET += 20
+        TEXT_OFFSET = TEXT_OFFSET % 80
         self.velocity = [0,0]
         self.schedule = "IDLE"
         self.task = "IDLE"
@@ -41,6 +47,9 @@ class Chatter:
         self.animation = Animator(context)
         self.set_schedule("WANDER")
     
+    def get_text_offset(self):
+        return self.text_offset
+
     def get_name_text(self):
         return self.name_text
     
