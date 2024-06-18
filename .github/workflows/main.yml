@@ -21,7 +21,7 @@ jobs:
           pyinstaller zingo-fight-pit.py
           copy "./dist/zingo-fight-pit/zingo-fight-pit.exe" "./zingo-fight-pit.exe"
           copy "./settings_template.json" "./settings.json"
-          (robocopy "./dist/zingo-fight-pit/_internal" "_internal" /e) & IF (%ERRORLEVEL% LEQ 7) exit 0
+          cmd /c 'robocopy "./dist/zingo-fight-pit/_internal" "_internal" /e & exit 0'
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
