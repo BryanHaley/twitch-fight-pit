@@ -40,21 +40,27 @@ async def on_ready(ready_event: EventData):
 # this will be called whenever a message in a channel was send by either the bot OR another user
 async def on_message(msg: ChatMessage):
     print(f'in {msg.room.name}, {msg.user.name} said: {msg.text}')
+    global context
+    if msg.user.name in context["IGNORE_LIST"]:
+        return
     if msg.user.name not in chatters:
         main_funcs["add_chatter"](msg.user.name)
         chatters[msg.user.name] = {"health": 20000, "defended": False}
 
 
 # this will be called whenever someone subscribes to a channel
-async def on_sub(sub: ChatSub):
-    print(f'New subscription in {sub.room.name}:\\n'
-          f'  Type: {sub.sub_plan}\\n'
-          f'  Message: {sub.sub_message}')
+# async def on_sub(sub: ChatSub):
+#     print(f'New subscription in {sub.room.name}:\\n'
+#           f'  Type: {sub.sub_plan}\\n'
+#           f'  Message: {sub.sub_message}')
 
 async def attack_command(cmd: ChatCommand):
     # Don't respond if the timeout hasn't elapsed
     global LAST_COMMAND_TIME
     global COMMAND_TIMEOUT_SECONDS
+    global context
+    if cmd.user.name in context["IGNORE_LIST"]:
+        return
     if time.time() < LAST_COMMAND_TIME+COMMAND_TIMEOUT_SECONDS:
         return
     LAST_COMMAND_TIME = time.time()
@@ -116,6 +122,9 @@ async def defend_command(cmd: ChatCommand):
     # Don't respond if the timeout hasn't elapsed
     global LAST_COMMAND_TIME
     global COMMAND_TIMEOUT_SECONDS
+    global context
+    if cmd.user.name in context["IGNORE_LIST"]:
+        return
     if time.time() < LAST_COMMAND_TIME+COMMAND_TIMEOUT_SECONDS:
         return
     LAST_COMMAND_TIME = time.time()
@@ -152,6 +161,9 @@ async def heal_command(cmd: ChatCommand):
     # Don't respond if the timeout hasn't elapsed
     global LAST_COMMAND_TIME
     global COMMAND_TIMEOUT_SECONDS
+    global context
+    if cmd.user.name in context["IGNORE_LIST"]:
+        return
     if time.time() < LAST_COMMAND_TIME+COMMAND_TIMEOUT_SECONDS:
         return
     LAST_COMMAND_TIME = time.time()
@@ -189,6 +201,9 @@ async def pet_command(cmd: ChatCommand):
     # Don't respond if the timeout hasn't elapsed
     global LAST_COMMAND_TIME
     global COMMAND_TIMEOUT_SECONDS
+    global context
+    if cmd.user.name in context["IGNORE_LIST"]:
+        return
     if time.time() < LAST_COMMAND_TIME+COMMAND_TIMEOUT_SECONDS:
         return
     LAST_COMMAND_TIME = time.time()
@@ -258,7 +273,7 @@ async def run_twitch_handler(main_context):
     # listen to chat messages
     chat.register_event(ChatEvent.MESSAGE, on_message)
     # listen to channel subscriptions
-    chat.register_event(ChatEvent.SUB, on_sub)
+    # chat.register_event(ChatEvent.SUB, on_sub)
     # there are more events, you can view them all in this documentation
 
     # you can directly register commands and their handlers, this will register the !reply command

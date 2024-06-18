@@ -7,5 +7,6 @@
     "COMMAND_TIMEOUT_SECONDS": 5,
     "SCREEN_WIDTH": 1440,
     "SCREEN_HEIGHT": 600,
-    "DEBUG": false
+    "DEBUG": false,
+    "IGNORE_LIST": ["nightbot", "streamelements", "streamlabs", "moobot"]
 }
