@@ -26,8 +26,8 @@ jobs:
         with:
           name: zingo-fight-pit-win
           path: |
-          zingo-fight-pit.exe
-          skins/*
-          bubble.png
-          settings.json
+            zingo-fight-pit.exe
+            skins/*
+            bubble.png
+            settings.json
       
