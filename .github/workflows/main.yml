@@ -17,10 +17,17 @@ jobs:
       - name: Install dependencies
         run: python -m pip install twitchAPI==4.2.0 pyinstaller==6.8.0 pygame==2.4.0
       - name: Package overlay application
-        run: pyinstaller zingo-fight-pit.py
+        run: |
+          pyinstaller zingo-fight-pit.py
+          xcopy /s dist/zingo-fight-pit/zingo-fight-pit.exe zingo-fight-pit.exe
+          xcopy /s settings_template.json settings.json
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: zingo-fight-pit-win
-          path: dist/zingo-fight-pit/zingo-fight-pit.exe
+          path: |
+          zingo-fight-pit.exe
+          skins/*
+          bubble.png
+          settings.json
       
