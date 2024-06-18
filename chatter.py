@@ -168,6 +168,9 @@ class Chatter:
         elif self.velocity[0] > 0:
             self.flip = False
 
+        if self.schedule == "WANDER" and self.velocity[0] != 0:
+            self.animation.set_animation("WALK")
+
         self.move()
     
     def run_task(self, task, task_func, next_task):
