@@ -231,22 +231,22 @@ class Chatter:
     def task_take_damage(self):
         self.set_defended(False)
         if self.counter_attack:
-            self.play_animation_as_task("COUNTER", 2)
+            self.play_animation_as_task("COUNTER", 1)
         else:
-            self.play_animation_as_task("DAMAGE", 2)
+            self.play_animation_as_task("DAMAGE", 1)
         
         if self.faint and self.task_status == "FINISHED":
             self.set_schedule("FAINT")
     
     def task_get_healed(self):
-        self.play_animation_as_task("HEALED", 2)
+        self.play_animation_as_task("HEALED", 1)
     
     def task_get_petted(self):
-        self.play_animation_as_task("PETTED", 2)
+        self.play_animation_as_task("PETTED", 1)
     
     def task_get_defended(self):
         self.set_defended(True)
-        self.play_animation_as_task("DEFENDED", 2)
+        self.play_animation_as_task("DEFENDED", 1)
     
     def play_animation_as_task(self, anim, wait_time):
         self.velocity = [0,0]
