@@ -15,12 +15,7 @@ LAST_COMMAND_TIME = time.time()
 
 context = {}
 main_funcs = {}
-chatters = {
-    "zingochris": {
-        "health": 20000,
-        "defended": False
-    }
-}
+chatters = {}
 
 def set_funcs(funcs):
     main_funcs["add_chatter"] = funcs["add_chatter"]
@@ -68,12 +63,15 @@ async def attack_command(cmd: ChatCommand):
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} squashed a zingo! zingo37Foot zingo37Foot zingo37Foot")
+    elif cmd.user.name == cmd.parameter:
+        pass # Ignore commands on self
     else:
         if cmd.user.name not in chatters:
             main_funcs["add_chatter"](cmd.user.name)
             chatters[cmd.user.name] = {"health": 20000, "defended": False}
         if cmd.parameter not in chatters:
             await cmd.reply(f'{cmd.user.name} tried to squash {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            return
             
         damage = random.randint(100,9999)
         if chatters[cmd.parameter]["defended"]:
@@ -126,12 +124,15 @@ async def defend_command(cmd: ChatCommand):
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} defended a zingo! zingoW")
+    elif cmd.user.name == cmd.parameter:
+        pass # Ignore commands on self
     else:
         if cmd.user.name not in chatters:
             main_funcs["add_chatter"](cmd.user.name)
             chatters[cmd.user.name] = {"health": 20000, "defended": False}
         if cmd.parameter not in chatters:
             await cmd.reply(f'{cmd.user.name} tried to defend {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            return
 
         success = True if random.randint(0,3) != 0 else False
 
@@ -159,12 +160,15 @@ async def heal_command(cmd: ChatCommand):
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} healed a zingo! Petthezingo")
+    elif cmd.user.name == cmd.parameter:
+        pass # Ignore commands on self
     else:
         if cmd.user.name not in chatters:
             main_funcs["add_chatter"](cmd.user.name)
             chatters[cmd.user.name] = {"health": 20000, "defended": False}
         if cmd.parameter not in chatters:
             await cmd.reply(f'{cmd.user.name} tried to heal {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            return
 
         success = True if random.randint(0,2) != 0 else False
 
@@ -193,12 +197,15 @@ async def pet_command(cmd: ChatCommand):
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} pet a zingo! Petthezingo")
+    elif cmd.user.name == cmd.parameter:
+        pass # Ignore commands on self
     else:
         if cmd.user.name not in chatters:
             main_funcs["add_chatter"](cmd.user.name)
             chatters[cmd.user.name] = {"health": 20000, "defended": False}
         if cmd.parameter not in chatters:
             await cmd.reply(f'{cmd.user.name} tried to pet {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            return
         
         if main_funcs["chatter_pet"](cmd.user.name, cmd.parameter):
             await cmd.reply(f'{cmd.user.name} pet {cmd.parameter}! Petthezingo Petthezingo Petthezingo')
@@ -221,6 +228,12 @@ async def run_twitch_handler(main_context):
     APP_SECRET = context["TWITCH_APP_SECRET"]
     TARGET_CHANNEL = context["TWITCH_CHANNEL"]
     COMMAND_TIMEOUT_SECONDS = context["COMMAND_TIMEOUT_SECONDS"]
+
+    if context["DEBUG"]:
+        chatters["testma"] = {
+            "health": 20000,
+            "defended": False
+        }
 
     # set up twitch api instance and add user authentication with some scopes
     twitch = await Twitch(APP_ID, APP_SECRET)

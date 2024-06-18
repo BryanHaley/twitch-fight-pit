@@ -110,7 +110,8 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(context["screen_size"])
     context["font"] = pygame.font.SysFont('Verdana', 16)
 
-    chatters["zingochris"] = Chatter(context, "zingochris")
+    if context["DEBUG"]:
+        chatters["testma"] = Chatter(context, "testma")
     bubble_img = pygame.image.load("bubble.png")
 
     while True:
