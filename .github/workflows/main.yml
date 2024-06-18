@@ -19,8 +19,8 @@ jobs:
       - name: Package overlay application
         run: |
           pyinstaller zingo-fight-pit.py
-          xcopy /s dist/zingo-fight-pit/zingo-fight-pit.exe zingo-fight-pit.exe
-          xcopy /s settings_template.json settings.json
+          xcopy /s ./dist/zingo-fight-pit/zingo-fight-pit.exe ./zingo-fight-pit.exe
+          xcopy /s ./settings_template.json ./settings.json
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
