@@ -11,6 +11,7 @@ from twitch import run_twitch_handler, set_funcs
 
 RENDERING_TIMEOUT_SECONDS = 300
 LAST_COMMAND_TIME = time.time()
+WANT_QUIT = False
 
 context = {}
 chatters = {}
@@ -19,6 +20,14 @@ background = 0, 255, 0
 
 def start_twitch_handler_thread(context):
     asyncio.run(run_twitch_handler(context))
+
+def set_want_quit(quit):
+    global WANT_QUIT
+    WANT_QUIT = quit
+
+def get_want_quit():
+    global WANT_QUIT
+    return WANT_QUIT
 
 def load_sheets_from_folder():
     global SpriteSheets
@@ -99,7 +108,8 @@ if __name__ == "__main__":
         "chatter_heal": chatter_heal,
         "chatter_pet": chatter_pet,
         "set_chatter_defended": set_chatter_defended,
-        "set_last_command_time": set_last_command_time
+        "set_last_command_time": set_last_command_time,
+        "get_want_quit": get_want_quit
     })
 
     twitch_thread = threading.Thread(target=start_twitch_handler_thread, args=[context])
@@ -116,7 +126,10 @@ if __name__ == "__main__":
 
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: break
+            if event.type == pygame.QUIT:
+                set_want_quit(True)
+                twitch_thread.join(2)
+                sys.exit()
         
         for chatter in chatters:
             if chatters[chatter].get_schedule() == "IDLE":
@@ -136,6 +149,3 @@ if __name__ == "__main__":
                 print(traceback.format_exc())
         pygame.display.flip()
         time.sleep(0.01)
-    
-    twitch_thread.join()
-    sys.exit()

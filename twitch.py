@@ -25,6 +25,7 @@ def set_funcs(funcs):
     main_funcs["chatter_pet"] = funcs["chatter_pet"]
     main_funcs["set_chatter_defended"] = funcs["set_chatter_defended"]
     main_funcs["set_last_command_time"] = funcs["set_last_command_time"]
+    main_funcs["get_want_quit"] = funcs["get_want_quit"]
 
 # this will be called when the event READY is triggered, which will be on bot start
 async def on_ready(ready_event: EventData):
@@ -222,6 +223,7 @@ async def run_twitch_handler(main_context):
     global APP_SECRET
     global TARGET_CHANNEL
     global COMMAND_TIMEOUT_SECONDS
+    global BOT_READY
 
     context = main_context
     APP_ID = context["TWITCH_APP_ID"]
@@ -265,12 +267,14 @@ async def run_twitch_handler(main_context):
     chat.start()
 
     while not BOT_READY:
+        if main_funcs["get_want_quit"]():
+            break
         time.sleep(0.1)
 
-    # lets run till we press enter in the console
-    try:
-        input('press ENTER to stop\n')
-    finally:
-        # now we can close the chat bot and the twitch api client
-        chat.stop()
-        await twitch.close()
+    while not main_funcs["get_want_quit"]():
+        if main_funcs["get_want_quit"]():
+            break
+        time.sleep(0.1)
+    
+    chat.stop()
+    await twitch.close()
