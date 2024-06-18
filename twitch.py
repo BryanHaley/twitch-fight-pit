@@ -236,6 +236,11 @@ async def run_twitch_handler(main_context):
             "health": 20000,
             "defended": False
         }
+    else:
+        chatters[context["TWITCH_CHANNEL"]] = {
+            "health": 20000,
+            "defended": False
+        }
 
     # set up twitch api instance and add user authentication with some scopes
     twitch = await Twitch(APP_ID, APP_SECRET)

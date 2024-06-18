@@ -122,6 +122,8 @@ if __name__ == "__main__":
 
     if context["DEBUG"]:
         chatters["testma"] = Chatter(context, "testma")
+    else:
+        chatters[context["TWITCH_CHANNEL"]] = Chatter(context, context["TWITCH_CHANNEL"])
     bubble_img = pygame.image.load("bubble.png")
 
     while True:
