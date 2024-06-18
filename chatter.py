@@ -13,6 +13,8 @@ AI_SCHEDULE_STARTS = {
     "HEAL": "MOVE_TO_TARGET",
     "DEFEND": "MOVE_TO_TARGET",
     "GET_DEFENDED": "GET_DEFENDED",
+    "PET": "MOVE_TO_TARGET",
+    "GET_PETTED": "GET_PETTED",
     "FAINT": "FAINT"
 }
 
@@ -20,8 +22,7 @@ class Chatter:
 
     def __init__(self, context, name):
         self.xmax = context["screen_size"][0]-140
-        self.img = pygame.image.load("smile.png")
-        self.rect = self.img.get_rect()
+        self.rect = pygame.Rect(0,0,128,128)
         self.rect.x = random.randrange(140, self.xmax)
         self.rect.y = 400
         self.name_text = context["font"].render(name, True, (0, 0, 0))
@@ -80,6 +81,9 @@ class Chatter:
     
     def defend(self, defend_target):
         self.action_on_actor(defend_target, "DEFEND")
+    
+    def pet(self, pet_target):
+        self.action_on_actor(pet_target, "PET")
 
     def action_on_actor(self, target, schedule):
         self.target = target.get_rect().centerx + (64 if random.randint(0,1) == 0 else -64)
@@ -138,6 +142,18 @@ class Chatter:
             self.run_task("WAIT_RANDOM", self.task_wait_random, "END")
             if self.task == "END":
                 self.set_schedule("IDLE")
+        elif self.schedule == "PET":
+            self.run_task("MOVE_TO_TARGET", self.task_move_to_target, "FACE_TARGET")
+            self.run_task("FACE_TARGET", self.task_face_target, "PET")
+            self.run_task("PET", self.task_pet, "WAIT_RANDOM")
+            self.run_task("WAIT_RANDOM", self.task_wait_random, "END")
+            if self.task == "END":
+                self.set_schedule("IDLE")
+        elif self.schedule == "GET_PETTED":
+            self.run_task("GET_PETTED", self.task_get_petted, "WAIT_RANDOM")
+            self.run_task("WAIT_RANDOM", self.task_wait_random, "END")
+            if self.task == "END":
+                self.set_schedule("IDLE")
         elif self.schedule == "WAIT_THEN_IDLE":
             self.run_task("WAIT_RANDOM", self.task_wait_random, "END")
             if self.task == "END":
@@ -183,18 +199,26 @@ class Chatter:
         self.task_status = "FINISHED"
     
     def task_attack(self):
-        self.actor_target.set_schedule("TAKE_DAMAGE")
+        if self.task_status == "STARTING":
+            self.actor_target.set_schedule("TAKE_DAMAGE")
         self.play_animation_as_task("ATTACK", 1)
 
         if self.faint and self.task_status == "FINISHED":
             self.set_schedule("FAINT")
     
     def task_heal(self):
-        self.actor_target.set_schedule("GET_HEALED")
+        if self.task_status == "STARTING":
+            self.actor_target.set_schedule("GET_HEALED")
         self.play_animation_as_task("HEAL", 1)
     
+    def task_pet(self):
+        if self.task_status == "STARTING":
+            self.actor_target.set_schedule("GET_PETTED")
+        self.play_animation_as_task("PET", 1)
+    
     def task_defend(self):
-        self.actor_target.set_schedule("GET_DEFENDED")
+        if self.task_status == "STARTING":
+            self.actor_target.set_schedule("GET_DEFENDED")
         self.play_animation_as_task("DEFEND", 1)
     
     def task_wait_random(self):
@@ -216,6 +240,9 @@ class Chatter:
     
     def task_get_healed(self):
         self.play_animation_as_task("HEALED", 2)
+    
+    def task_get_petted(self):
+        self.play_animation_as_task("PETTED", 2)
     
     def task_get_defended(self):
         self.set_defended(True)
@@ -287,7 +314,7 @@ class Animator:
     
     def get_animation_frame(self):
         return self.current_frame
-    
+
     def set_animation_frame(self, frame):
         self.current_frame = frame
     

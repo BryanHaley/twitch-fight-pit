@@ -76,6 +76,13 @@ def chatter_heal(healer, healed):
     else:
         return False
 
+def chatter_pet(petter, petted):
+    if petter in chatters and petted in chatters:
+        chatters[petter].pet(chatters[petted])
+        return True
+    else:
+        return False
+
 def set_chatter_defended(chatter, defended):
     chatters[chatter].set_defended(defended)
 
@@ -90,6 +97,7 @@ if __name__ == "__main__":
         "chatter_attack": chatter_attack,
         "chatter_defend": chatter_defend,
         "chatter_heal": chatter_heal,
+        "chatter_pet": chatter_pet,
         "set_chatter_defended": set_chatter_defended,
         "set_last_command_time": set_last_command_time
     })
@@ -117,11 +125,14 @@ if __name__ == "__main__":
         screen.fill(background)
         # Only render if there's been a command within the last RENDERING_TIMEOUT_SECONDS seconds
         if time.time() < LAST_COMMAND_TIME+RENDERING_TIMEOUT_SECONDS:
-            for chatter in chatters:
-                screen.blit(chatters[chatter].get_name_text(), (chatters[chatter].get_rect().centerx-(chatters[chatter].get_name_text().get_rect().width/2), chatters[chatter].get_rect().top - 20))
-                screen.blit(pygame.transform.flip(chatters[chatter].get_img(), chatters[chatter].get_flip(), False), chatters[chatter].get_rect(), chatters[chatter].get_crop_square())
-                if chatters[chatter].get_defended():
-                    screen.blit(bubble_img, (chatters[chatter].get_rect().centerx-(bubble_img.get_rect().width/2), chatters[chatter].get_rect().centery-(bubble_img.get_rect().height/2)))
+            try:
+                for chatter in chatters:
+                    screen.blit(chatters[chatter].get_name_text(), (chatters[chatter].get_rect().centerx-(chatters[chatter].get_name_text().get_rect().width/2), chatters[chatter].get_rect().top - 20))
+                    screen.blit(pygame.transform.flip(chatters[chatter].get_img(), chatters[chatter].get_flip(), False), chatters[chatter].get_rect(), chatters[chatter].get_crop_square())
+                    if chatters[chatter].get_defended():
+                        screen.blit(bubble_img, (chatters[chatter].get_rect().centerx-(bubble_img.get_rect().width/2), chatters[chatter].get_rect().centery-(bubble_img.get_rect().height/2)))
+            except:
+                print(traceback.format_exc())
         pygame.display.flip()
         time.sleep(0.01)
     

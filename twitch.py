@@ -27,6 +27,7 @@ def set_funcs(funcs):
     main_funcs["chatter_attack"] = funcs["chatter_attack"]
     main_funcs["chatter_defend"] = funcs["chatter_defend"]
     main_funcs["chatter_heal"] = funcs["chatter_heal"]
+    main_funcs["chatter_pet"] = funcs["chatter_pet"]
     main_funcs["set_chatter_defended"] = funcs["set_chatter_defended"]
     main_funcs["set_last_command_time"] = funcs["set_last_command_time"]
 
@@ -62,6 +63,8 @@ async def attack_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
+    if cmd.parameter.startswith('@'):
+        cmd.parameter = cmd.parameter[1:]
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} squashed a zingo! zingo37Foot zingo37Foot zingo37Foot")
@@ -118,6 +121,8 @@ async def defend_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
+    if cmd.parameter.startswith('@'):
+        cmd.parameter = cmd.parameter[1:]
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} defended a zingo! zingoW")
@@ -149,6 +154,8 @@ async def heal_command(cmd: ChatCommand):
         return
     LAST_COMMAND_TIME = time.time()
     main_funcs["set_last_command_time"](time.time())
+    if cmd.parameter.startswith('@'):
+        cmd.parameter = cmd.parameter[1:]
     
     if len(cmd.parameter) == 0:
         await cmd.reply(f"{cmd.user.name} healed a zingo! Petthezingo")
@@ -172,6 +179,31 @@ async def heal_command(cmd: ChatCommand):
             await cmd.reply(f'{cmd.user.name} healed {cmd.parameter}! Petthezingo They now have {chatters[cmd.parameter]["health"]}/20000 health points.')
         else:
             await cmd.reply(f'{cmd.user.name} tried to heal {cmd.parameter}, but they failed! zingocConfused zingocConfused zingocConfused')
+
+async def pet_command(cmd: ChatCommand):
+    # Don't respond if the timeout hasn't elapsed
+    global LAST_COMMAND_TIME
+    global COMMAND_TIMEOUT_SECONDS
+    if time.time() < LAST_COMMAND_TIME+COMMAND_TIMEOUT_SECONDS:
+        return
+    LAST_COMMAND_TIME = time.time()
+    main_funcs["set_last_command_time"](time.time())
+    if cmd.parameter.startswith('@'):
+        cmd.parameter = cmd.parameter[1:]
+    
+    if len(cmd.parameter) == 0:
+        await cmd.reply(f"{cmd.user.name} pet a zingo! Petthezingo")
+    else:
+        if cmd.user.name not in chatters:
+            main_funcs["add_chatter"](cmd.user.name)
+            chatters[cmd.user.name] = {"health": 20000, "defended": False}
+        if cmd.parameter not in chatters:
+            await cmd.reply(f'{cmd.user.name} tried to pet {cmd.parameter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+        
+        if main_funcs["chatter_pet"](cmd.user.name, cmd.parameter):
+            await cmd.reply(f'{cmd.user.name} pet {cmd.parameter}! Petthezingo Petthezingo Petthezingo')
+        else:
+            await cmd.reply(f'{cmd.user.name} tried to pet {cmd.parameter}, but they failed! zingocConfused zingocConfused zingocConfused')
 
 
 # this is where we set up the bot
@@ -214,6 +246,7 @@ async def run_twitch_handler(main_context):
     chat.register_command('squash', attack_command)
     chat.register_command('defend', defend_command)
     chat.register_command('heal', heal_command)
+    chat.register_command('pet', pet_command)
 
     # we are done with our setup, lets start this bot up!
     chat.start()
