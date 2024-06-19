@@ -103,13 +103,19 @@ class Animator:
                 filename = os.path.basename(item)
                 if not (filename[-4:] == ".PNG" or filename[-4:] == ".png"):
                     continue
-                filename_parts = filename[:-4].split("_")
-                if len(filename_parts) < 3:
-                    continue
-                # Find animation base name, framerate, and looping
-                anim_basename = filename_parts[0]
-                anim_framerate = 1/float(filename_parts[1])
-                anim_loop = True if filename_parts[2].lower() == "true" else False
+                if "_" in filename:
+                    filename_parts = filename[:-4].split("_")
+                    if len(filename_parts) < 3:
+                        continue
+                    # Find animation base name, framerate, and looping
+                    anim_basename = filename_parts[0]
+                    anim_framerate = 1/float(filename_parts[1])
+                    anim_loop = True if filename_parts[2].lower() == "true" else False
+                else:
+                    # Assume some defaults
+                    anim_basename = filename[:-4]
+                    anim_framerate = 1/12
+                    anim_loop = False
                 # Load image for animation
                 anim_img = ResourceManager.load_img(item)
                 # Determine anim size and number of frames
@@ -126,7 +132,7 @@ class Animator:
                 if not self._current_animation:
                     self._current_animation = self._animations[anim_basename][0]
             except:
-                print("Failed to create animation from {}".format(item))
+                print("Failed to create animation from {} (is the filename formatted correctly?)".format(item))
                 sys.exit(traceback.format_exc())
     
     def set_animation(self, name, index=-1, reset=True):
