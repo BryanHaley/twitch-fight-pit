@@ -194,7 +194,7 @@ if __name__ == "__main__":
     deltatime = 0
 
     actor = Actor()
-    animator = Animator(".")
+    animator = Animator("test/animations")
     point = (random.randint(400, 800), random.randint(300, 600))
 
     while True:
