@@ -1,6 +1,7 @@
 import math
 import os
 import sys
+import random
 import traceback
 from resources import ResourceManager
 
@@ -185,7 +186,6 @@ class Animator:
 if __name__ == "__main__":
     import pygame
     import sys
-    import random
 
     # Test actor and animation by moving an animation around the screen
     pygame.init()

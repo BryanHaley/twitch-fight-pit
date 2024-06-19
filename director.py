@@ -1,7 +1,7 @@
 import traceback
+import time
 import pygame
 
-# This doesn't work, we need a state machine
 class Director:
     """
     The director runs in another thread and coordinates active actors and animation sequences based on commands in a queue
@@ -11,14 +11,22 @@ class Director:
         self._actors = actors
         self._clock = pygame.time.Clock()
         self._quit = False
+        self._director_thread = None
     
     def enqueue_command(self, command):
         self._command_queue.append(command)
     
     def quit(self):
+        if not self._director_thread:
+            return
         self._quit = True
+        self._director_thread.join(10)
 
     def run(self):
+        self._director_thread = threading.Thread(target=self.direct)
+        self._director_thread.start()
+
+    def direct(self):
         while not self._quit:
             # Get command off queue
             if len(self._command_queue) > 0:
@@ -42,27 +50,35 @@ class Director:
         # Move actor1 into position
         move_to_pos_running = "RUNNING"
         actor1_animator.set_animation("run")
+        actor2_animator.set_animation("idle")
+        deltatime = 0
         while move_to_pos_running != "SUCCESS":
-            move_to_pos_running = actor1.move_to_point(actor2.get_x()-64, 10, 5, self._clock.get_time())
+            actor1_animator.play(deltatime)
+            actor2_animator.play(deltatime)
+            # TODO: Configure floor height
+            move_to_pos_running = actor1.move_to_point((actor2.get_x()-64, 400), 50, 5, deltatime)
             self._clock.tick(60)
+            deltatime = self._clock.get_time() * 0.001
         # Play animations
-        actor1_anim_playing = True
-        actor2_anim_playing = True
+        actor1_anim_playing = "RUNNING"
+        actor2_anim_playing = "RUNNING"
         actor1_animator.set_animation("pet")
-        actor1_animator.set_animation("get-pet")
+        actor2_animator.set_animation("get-pet")
         deltatime = 0
         while actor1_anim_playing == "RUNNING" or actor2_anim_playing == "RUNNING":
             actor1_anim_playing = actor1_animator.play(deltatime)
             actor2_anim_playing = actor2_animator.play(deltatime)
             self._clock.tick(60)
-            deltatime = self._clock.get_time()
-        
+            deltatime = self._clock.get_time() * 0.001
+        # Return to idle
+        actor1_animator.set_animation("idle")
+        actor2_animator.set_animation("idle")
+        # TODO: Some sort of "being directed" flag on actors so we can return them back to the main thread's control
         return "SUCCESS"
 
 if __name__ == "__main__":
     import pygame
     import sys
-    import random
     import threading
     from actor import Actor, Animator
 
@@ -81,13 +97,13 @@ if __name__ == "__main__":
             "actor": actor1,
             "animator": animator1
         },
-        "aeoemech": {
+        "aeomech": {
             "actor": actor2,
             "animator": animator2
         }
     }
     director = Director(actors)
-    director_thread = threading.Thread(target=director.run)
+    director.run()
 
     director.enqueue_command({
         "actor1": "zingochris",
@@ -98,7 +114,11 @@ if __name__ == "__main__":
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                director.quit()
                 sys.exit()
+        
+        # animator1.play(deltatime)
+        # animator2.play(deltatime)
 
         screen.fill((0,0,0))
         screen.blit(animator1.get_img(), (actor1.get_x()-animator1.get_half_size(), actor1.get_y()-animator1.get_half_size()), animator1.get_crop_square())
