@@ -157,7 +157,7 @@ if __name__ == "__main__":
     import random
     from actor import Actor, Animator
 
-    # Test actor and animation by moving an animation around the screen
+    # Test director with some basic actions
     pygame.init()
     screen = pygame.display.set_mode((800,600))
     clock = pygame.time.Clock()
