@@ -21,6 +21,9 @@ class Actor:
         vec_x = point[0]-self._x
         vec_y = point[1]-self._y
         magnitude = math.sqrt(vec_x*vec_x + vec_y*vec_y)
+        if magnitude == 0:
+            # this implies position == point
+            return "SUCCESS"
         # Normalize the vector
         vec_x_norm = vec_x/magnitude
         vec_y_norm = vec_y/magnitude
