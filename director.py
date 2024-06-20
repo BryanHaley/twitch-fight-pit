@@ -43,26 +43,28 @@ class Director:
                 # The clock will tick while commands are being directed so we don't want to double tick
                 self._clock.tick(Settings.framerate)
     
-    def direct_pet_interaction(self, command):
-        # Get actors and animators
-        actor1 = self._actors[command["actor1"]]["actor"]
-        actor2 = self._actors[command["actor2"]]["actor"]
-        self._actors[command["actor1"]]["puppet"] = True
-        self._actors[command["actor2"]]["puppet"] = True
-        actor1_animator = self._actors[command["actor1"]]["animator"]
-        actor2_animator = self._actors[command["actor2"]]["animator"]
-        # Move actor1 into position
-        move_to_pos_running = "RUNNING"
-        actor1_animator.set_animation("run")
-        actor2_animator.set_animation("idle")
-        # Make actors face each other
+    def puppet_actor(self, actor):
+        self._actors[actor]["puppet"] = True
+
+    def unpuppet_actor(self, actor):
+        self._actors[actor]["puppet"] = False
+    
+    def make_actors_face_each_other(self, actor1, actor2):
         if actor1.get_x() < actor2.get_x():
             actor1.set_flipped(False)
             actor2.set_flipped(True)
         else:
             actor1.set_flipped(True)
             actor2.set_flipped(False)
+    
+    def position_actors_for_interaction(self, actor1, actor1_animator, actor2, actor2_animator):
+        move_to_pos_running = "RUNNING"
+        actor1_animator.set_animation("run")
+        actor2_animator.set_animation("idle")
+        # Make actors face each other
+        self.make_actors_face_each_other(actor1, actor2)
         deltatime = 0
+        # Move actor1 into position
         while move_to_pos_running != "SUCCESS":
             actor1_animator.play(deltatime)
             actor2_animator.play(deltatime)
@@ -74,30 +76,42 @@ class Director:
                 deltatime)
             self._clock.tick(Settings.framerate)
             deltatime = self._clock.get_time() * 0.001
-        # Make actors face each other again
-        if actor1.get_x() < actor2.get_x():
-            actor1.set_flipped(False)
-            actor2.set_flipped(True)
-        else:
-            actor1.set_flipped(True)
-            actor2.set_flipped(False)
-        # Play animations
+    
+    def play_interaction_animations(self, actor1_animator, actor2_animator, actor1_anim, actor2_anim):
         actor1_anim_playing = "RUNNING"
         actor2_anim_playing = "RUNNING"
-        actor1_animator.set_animation("pet")
-        actor2_animator.set_animation("get-pet")
+        actor1_animator.set_animation(actor1_anim)
+        actor2_animator.set_animation(actor2_anim)
         deltatime = 0
         while actor1_anim_playing == "RUNNING" or actor2_anim_playing == "RUNNING":
             actor1_anim_playing = actor1_animator.play(deltatime)
             actor2_anim_playing = actor2_animator.play(deltatime)
             self._clock.tick(Settings.framerate)
             deltatime = self._clock.get_time() * 0.001
+    
+    def direct_interaction(self, command, actor1_anim, actor2_anim):
+        # Get actors and animators
+        actor1 = self._actors[command["actor1"]]["actor"]
+        actor2 = self._actors[command["actor2"]]["actor"]
+        self.puppet_actor(command["actor1"])
+        self.puppet_actor(command["actor2"])
+        actor1_animator = self._actors[command["actor1"]]["animator"]
+        actor2_animator = self._actors[command["actor2"]]["animator"]
+        # Get actors into position
+        self.position_actors_for_interaction(actor1, actor1_animator, actor2, actor2_animator)
+        self.make_actors_face_each_other(actor1, actor2)
+        # Play animations
+        self.play_interaction_animations(actor1_animator, actor2_animator, actor1_anim, actor2_anim)
         # Return to idle
         actor1_animator.set_animation("idle")
         actor2_animator.set_animation("idle")
-        self._actors[command["actor1"]]["puppet"] = False
-        self._actors[command["actor2"]]["puppet"] = False
+        self.unpuppet_actor(command["actor1"])
+        self.unpuppet_actor(command["actor2"])
         return "SUCCESS"
+
+    def direct_pet_interaction(self, command):
+        self.direct_interaction(command, "pet", "get-pet")
+        
 
 if __name__ == "__main__":
     import pygame
