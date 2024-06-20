@@ -12,6 +12,8 @@ class Actor:
     def __init__(self, x=0, y=0):
         self._x = x
         self._y = y
+        self._goal = None
+        self._flipped = False
 
     def move_to_point(self, point, speed, epsilon, deltatime):
         # Calculate the vector between self and the point
@@ -26,9 +28,33 @@ class Actor:
             # Move along the vector by speed
             self._x += speed * deltatime * vec_x_norm
             self._y += speed * deltatime * vec_y_norm
+            # Set flipped value
+            self.set_flipped(True if vec_x_norm < 0 else False)
             return "RUNNING"
         # Otherwise, we're at the point, so return success
         return "SUCCESS"
+
+    def run(self, deltatime):
+        if self._goal:
+            state = self.move_to_point(self._goal, 40, 3, deltatime)
+            if state == "SUCCESS":
+                self._goal = None
+                return "SUCCESS"
+            else:
+                return "RUNNING"
+        return "FAILURE"
+    
+    def set_goal(self, goal):
+        self._goal = goal
+
+    def get_goal(self):
+        return self._goal
+    
+    def set_flipped(self, flip):
+        self._flipped = flip
+    
+    def get_flipped(self):
+        return self._flipped
     
     def get_x(self):
         return self._x
@@ -51,6 +77,7 @@ class Animation:
         self._size = size
         self._timer = 0
         self._loop = loop
+        self._flipped = False
     
     def play(self, deltatime):
         if self._current_frame == self._frames-1:
@@ -69,11 +96,17 @@ class Animation:
         return "SUCCESS"
 
     def get_crop_square(self):
-        crop_x1 = self._size * self._current_frame
+        crop_x1 = self._size * (self._current_frame if not self.get_flipped() else self._frames-self._current_frame-1)
         crop_y1 = 0
         crop_x2 = self._size
         crop_y2 = self._size
         return crop_x1, crop_y1, crop_x2, crop_y2
+    
+    def set_flipped(self, flip):
+        self._flipped = flip
+    
+    def get_flipped(self):
+        return self._flipped
     
     def get_img(self):
         return self._img
@@ -132,6 +165,7 @@ class Animator:
                 # Set the default animation if there is none
                 if not self._current_animation:
                     self._current_animation = self._animations[anim_basename][0]
+                    self._current_animation_name = anim_basename
             except:
                 print("Failed to create animation from {} (is the filename formatted correctly?)".format(item))
                 sys.exit(traceback.format_exc())
@@ -149,8 +183,15 @@ class Animator:
             index = random.randint(0, len(self._animations[name])-1)
         # Set the animation
         self._current_animation = self._animations[name][index]
+        self._current_animation_name = name
         if reset:
             self._current_animation.reset()
+    
+    def get_animation(self):
+        return self._current_animation
+    
+    def get_animation_name(self):
+        return self._current_animation_name
     
     def play(self, deltatime):
         if not self._current_animation:
@@ -161,6 +202,16 @@ class Animator:
         if not self._current_animation:
             return "FAILURE"
         return self._current_animation.reset()
+    
+    def set_flipped(self, flip):
+        if not self._current_animation:
+            return "FAILURE"
+        return self._current_animation.set_flipped(flip)
+    
+    def get_flipped(self):
+        if not self._current_animation:
+            return "FAILURE"
+        return self._current_animation.get_flipped()
     
     def get_img(self):
         if not self._current_animation:
