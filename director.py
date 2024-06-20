@@ -67,7 +67,7 @@ class Director:
             actor1_animator.play(deltatime)
             actor2_animator.play(deltatime)
             move_to_pos_running = actor1.move_to_point(
-                (actor2.get_x()+(Settings.sprite_spacing if actor1.get_x() < actor2.get_x() else -Settings.sprite_spacing), 
+                (actor2.get_x()+(-Settings.sprite_spacing if actor1.get_x() < actor2.get_x() else Settings.sprite_spacing), 
                  Settings.sprite_elevation), 
                 Settings.run_speed, 
                 Settings.move_epsilon, 
