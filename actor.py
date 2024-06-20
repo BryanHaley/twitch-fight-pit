@@ -25,6 +25,11 @@ class Actor:
         vec_y_norm = vec_y/magnitude
         # If we're not close enough to the point
         if abs(self._x-point[0]) > epsilon or abs(self._y-point[1]) > epsilon:
+            # If we're close to the goal slow down a little bit
+            distance = math.sqrt(vec_x*vec_x + vec_y*vec_y)
+            if distance < epsilon*3:
+                speed = speed*(distance/(epsilon*3))
+                speed = speed if speed > 5 else 5
             # Move along the vector by speed
             self._x += speed * deltatime * vec_x_norm
             self._y += speed * deltatime * vec_y_norm

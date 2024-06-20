@@ -1,5 +1,6 @@
 import traceback
 import time
+import threading
 import pygame
 
 class Director:
@@ -96,7 +97,6 @@ class Director:
 if __name__ == "__main__":
     import pygame
     import sys
-    import threading
     import random
     from actor import Actor, Animator
 
@@ -146,7 +146,8 @@ if __name__ == "__main__":
     director.enqueue_command({
         "actor1": "zingochris",
         "actor2": "aeomech",
-        "action": "pet"
+        "action": "pet",
+        "metadata": None
     })
 
     while True:
