@@ -36,6 +36,14 @@ class Director:
                 try:
                     if command["action"] == "pet":
                         self.direct_pet_interaction(command)
+                    elif command["action"] == "squash":
+                        self.direct_attack_interaction(command)
+                    elif command["action"] == "heal":
+                        self.direct_heal_interaction(command)
+                    elif command["action"] == "defend":
+                        self.direct_defend_interaction(command)
+                    else:
+                        print("Unrecognized command. Ignoring: {}: {}".format(command["action"], command))
                 except:
                     print("Failed to carry out command: {}".format(command))
                     print(traceback.format_exc())
@@ -111,6 +119,15 @@ class Director:
 
     def direct_pet_interaction(self, command):
         self.direct_interaction(command, "pet", "get-pet")
+    
+    def direct_attack_interaction(self, command):
+        self.direct_interaction(command, "attack", "get-attacked")
+    
+    def direct_defend_interaction(self, command):
+        self.direct_interaction(command, "defend", "get-defended")
+    
+    def direct_heal_interaction(self, command):
+        self.direct_interaction(command, "heal", "get-healed")
         
 
 if __name__ == "__main__":

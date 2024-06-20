@@ -11,7 +11,7 @@ class _GameInterface:
     def add_actor(self, name, x):
         if name not in self._actors:
             actor = Actor(x, Settings.sprite_elevation)
-            animator = Animator("test/director")
+            animator = Animator("skins/default")
             animator.set_animation("idle")
             self._actors[name] = {
                 "actor": actor,

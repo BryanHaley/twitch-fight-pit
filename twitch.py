@@ -25,16 +25,8 @@ async def on_message(msg: ChatMessage):
         print(traceback.format_exc())
 
 # Function to handle typical commands
-async def handle_command(cmd, action, action_past_tense, emote, send_reply=True):
+async def handle_command(cmd, commander, chatter, action, action_past_tense, emote, send_reply=True):
     try:
-        # Ignore zero length parameters
-        if len(cmd.parameter) < 1:
-            return "FAILURE"
-        
-        # Get actors
-        commander = str(cmd.user.name).lower()
-        chatter = str(cmd.parameter).lower()
-
         # Add the commander chatter if he isn't there already
         TwitchInterface.add_chatter(commander)
 
@@ -56,7 +48,7 @@ async def handle_command(cmd, action, action_past_tense, emote, send_reply=True)
         
         # Queue the command
         GameInterface.enqueue_command({
-            "action": "pet",
+            "action": action,
             "actor1": commander,
             "actor2": chatter,
             "metadata": None
@@ -76,7 +68,47 @@ async def handle_command(cmd, action, action_past_tense, emote, send_reply=True)
 
 # Callback for the pet command
 async def pet_command(cmd: ChatCommand):
-    await handle_command(cmd, "pet", "pet", "Petthezingo")
+    # Ignore zero length parameters
+    if len(cmd.parameter) < 1:
+        return "FAILURE"
+    # Get actors
+    commander = str(cmd.user.name).lower()
+    chatter = str(cmd.parameter).lower()
+    # Handle command
+    await handle_command(cmd, commander, chatter, "pet", "pet", "Petthezingo")
+
+# Callback for the squash command
+async def attack_command(cmd: ChatCommand):
+    # Ignore zero length parameters
+    if len(cmd.parameter) < 1:
+        return "FAILURE"
+    # Get actors
+    commander = str(cmd.user.name).lower()
+    chatter = str(cmd.parameter).lower()
+    # Handle command
+    await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot")
+
+# Callback for the heal command
+async def heal_command(cmd: ChatCommand):
+    # Ignore zero length parameters
+    if len(cmd.parameter) < 1:
+        return "FAILURE"
+    # Get actors
+    commander = str(cmd.user.name).lower()
+    chatter = str(cmd.parameter).lower()
+    # Handle command
+    await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW")
+
+# Callback for the defend command
+async def defend_command(cmd: ChatCommand):
+    # Ignore zero length parameters
+    if len(cmd.parameter) < 1:
+        return "FAILURE"
+    # Get actors
+    commander = str(cmd.user.name).lower()
+    chatter = str(cmd.parameter).lower()
+    # Handle command
+    await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
 
 
 # this is where we set up the bot
@@ -96,9 +128,9 @@ async def run_twitch_handler():
     chat.register_event(ChatEvent.MESSAGE, on_message)
 
     # Register command handlers
-    # chat.register_command('squash', attack_command)
-    # chat.register_command('defend', defend_command)
-    # chat.register_command('heal', heal_command)
+    chat.register_command('squash', attack_command)
+    chat.register_command('defend', defend_command)
+    chat.register_command('heal', heal_command)
     chat.register_command('pet', pet_command)
 
     # Start chat connection
