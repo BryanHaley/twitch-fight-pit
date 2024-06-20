@@ -11,13 +11,13 @@ from twitchAPI.chat import Chat, EventData, ChatMessage, ChatSub, ChatCommand
 
 # Callback for the chat connection being ready
 async def on_ready(ready_event: EventData):
-    print('Bot is ready for work, joining channels')
+    print('Bot is ready for work; joining channel {}'.format(TwitchInterface.get_target_channel()))
     await ready_event.chat.join_room(TwitchInterface.get_target_channel())
 
 # Callback for messages in chat
 async def on_message(msg: ChatMessage):
     try:
-        if Settings.debug:
+        if Settings.debug or str(msg.text).strip().startswith("!"):
             print(f'{msg.user.name}: {msg.text}')
         TwitchInterface.add_chatter(str(msg.user.name).lower())
     except:
@@ -86,7 +86,51 @@ async def attack_command(cmd: ChatCommand):
     commander = str(cmd.user.name).lower()
     chatter = str(cmd.parameter).lower()
     # Handle command
-    await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot")
+    result = await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot", False)
+    if result != "SUCCESS":
+        return "FAILURE"
+    # Determine damage and counter
+    damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+    counter_damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+    counter = True if random.randint(1,Settings.counter_chance) == 1 else False
+    # Apply damage
+    chatter_status = TwitchInterface.damage_chatter(chatter, damage)
+    if chatter_status == "FAINTED":
+        counter = False # Can't counter if you've fainted
+        GameInterface.enqueue_command({
+            "action": "faint",
+            "actor": chatter,
+            "metadata": None
+        })
+    # If countering, queue that up
+    if counter:
+        GameInterface.enqueue_command({
+            "action": "squash",
+            "actor1": chatter,
+            "actor2": commander,
+            "metadata": None
+        })
+    commander_status = "ALIVE"
+    if counter:
+        commander_status = TwitchInterface.damage_chatter(commander, counter_damage)
+        if commander_status == "FAINTED":
+            GameInterface.enqueue_command({
+                "action": "faint",
+                "actor": commander,
+                "metadata": None
+            })
+    # Build message
+    msg = f'{commander} squashed {chatter} for {damage} damage!'
+    if counter:
+        msg += f' {chatter} counters for {counter_damage} damage!'
+    msg += ' zingo37Foot zingo37Foot zingo37Foot'
+    if chatter_status == "FAINTED":
+        msg += f' {chatter} fainted! zingocSad'
+    if commander_status == "FAINTED":
+        msg += f' {commander} fainted! zingocSad'
+    # Send message
+    await cmd.reply(msg)
+    return "SUCCESS"
 
 # Callback for the heal command
 async def heal_command(cmd: ChatCommand):
@@ -98,6 +142,7 @@ async def heal_command(cmd: ChatCommand):
     chatter = str(cmd.parameter).lower()
     # Handle command
     await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW")
+    return "SUCCESS"
 
 # Callback for the defend command
 async def defend_command(cmd: ChatCommand):
@@ -109,6 +154,7 @@ async def defend_command(cmd: ChatCommand):
     chatter = str(cmd.parameter).lower()
     # Handle command
     await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
+    return "SUCCESS"
 
 
 # this is where we set up the bot

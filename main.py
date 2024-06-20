@@ -34,6 +34,7 @@ if __name__ == "__main__":
     TwitchInterface.set_app_secret(Settings.app_secret)
     TwitchInterface.set_target_channel(Settings.target_channel)
     TwitchInterface.set_ignore_list(Settings.ignore_list)
+    TwitchInterface.set_chatter_default_health(Settings.default_health)
 
     # Add a chatter to test with if needed
     if Settings.debug:

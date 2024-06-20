@@ -23,7 +23,10 @@ class _Settings:
             "WALK_SPEED": 40,
             "RUN_SPEED": 100,
             "MOVE_EPSILON": 2,
-            "FRAMERATE": 60
+            "FRAMERATE": 60,
+            "DEFAULT_HEALTH": 20000,
+            "DAMAGE_RANGE": [99,9999],
+            "COUNTER_CHANCE": 10
         }
     
     def init_from_file(self, filepath):
@@ -79,5 +82,9 @@ class _Settings:
         self.run_speed = self._settings_json["RUN_SPEED"]
         self.move_epsilon = max(0, self._settings_json["MOVE_EPSILON"])
         self.framerate = max(12, self._settings_json["FRAMERATE"])
+        self.default_health = max(0, self._settings_json["DEFAULT_HEALTH"])
+        self.damage_range_min = max(0, self._settings_json["DAMAGE_RANGE"][0])
+        self.damage_range_max = max(1, self._settings_json["DAMAGE_RANGE"][1])
+        self.counter_chance = max(1, self._settings_json["COUNTER_CHANCE"])
 
 Settings = _Settings()

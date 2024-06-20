@@ -9,6 +9,7 @@ class _TwitchInterface:
         self._app_id = ""
         self._app_secret = ""
         self._target_channel = ""
+        self._chatter_default_health = 20000
         self._last_command_time = time.time()
         self._want_quit = False
     
@@ -19,7 +20,8 @@ class _TwitchInterface:
         if name not in self._chatter_metadata:
             self._chatter_metadata[name] = {
                 "last_chat_time": 0,
-                "last_command_time": 0
+                "last_command_time": 0,
+                "health": self._chatter_default_health
             }
         self.set_chatter_last_chat_time(name)
         self.set_chatter_last_command_time(name)
@@ -27,6 +29,16 @@ class _TwitchInterface:
     
     def update_last_command_time(self):
         self._last_command_time = time.time()
+
+    def damage_chatter(self, name, damage):
+        self._chatter_metadata[name]["health"] -= damage
+        if self._chatter_metadata[name]["health"] <= 0:
+            self._chatter_metadata[name]["health"] = self._chatter_default_health
+            return "FAINTED"
+        return "ALIVE"
+    
+    def set_chatter_default_health(self, health):
+        self._chatter_default_health = health
     
     def set_chatter_last_chat_time(self, name):
         if name in self._ignore_list or name not in self._chatter_metadata:

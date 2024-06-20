@@ -42,6 +42,8 @@ class Director:
                         self.direct_heal_interaction(command)
                     elif command["action"] == "defend":
                         self.direct_defend_interaction(command)
+                    elif command["action"] == "faint":
+                        self.direct_faint_interaction(command)
                     else:
                         print("Unrecognized command. Ignoring: {}: {}".format(command["action"], command))
                 except:
@@ -128,6 +130,25 @@ class Director:
     
     def direct_heal_interaction(self, command):
         self.direct_interaction(command, "heal", "get-healed")
+    
+    def direct_faint_interaction(self, command):
+        # Get actors and animators
+        actor1 = self._actors[command["actor"]]["actor"]
+        self.puppet_actor(command["actor"])
+        actor1_animator = self._actors[command["actor"]]["animator"]
+        actor1_anim_playing = "RUNNING"
+        actor1_animator.set_animation("faint")
+        # Play animation
+        deltatime = 0
+        while actor1_anim_playing == "RUNNING":
+            actor1_anim_playing = actor1_animator.play(deltatime)
+            self._clock.tick(Settings.framerate)
+            deltatime = self._clock.get_time() * 0.001
+        # Return to idle
+        actor1_animator.set_animation("idle")
+        self.unpuppet_actor(command["actor"])
+        return "SUCCESS"
+        
         
 
 if __name__ == "__main__":
