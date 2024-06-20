@@ -1,12 +1,5 @@
 {
     "TWITCH_APP_ID": "",
     "TWITCH_APP_SECRET": "",
-    "TWITCH_CHANNEL": "",
-    "BACKGROUND_COLOR": [0,255,0],
-    "RENDERING_TIMEOUT_SECONDS": 300,
-    "COMMAND_TIMEOUT_SECONDS": 5,
-    "SCREEN_WIDTH": 1440,
-    "SCREEN_HEIGHT": 600,
-    "DEBUG": false,
-    "IGNORE_LIST": ["nightbot", "streamelements", "streamlabs", "moobot"]
+    "TWITCH_CHANNEL": ""
 }
