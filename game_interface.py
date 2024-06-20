@@ -1,4 +1,5 @@
-import time
+import os
+import random
 from actor import Actor, Animator
 from settings import Settings
 from nametag import Nametag
@@ -11,8 +12,20 @@ class _GameInterface:
     
     def add_actor(self, name, x):
         if name not in self._actors:
+            # Create actor
             actor = Actor(x, Settings.sprite_elevation)
-            animator = Animator("skins/default")
+            # Determine skin to use
+            path = os.path.join("skins", "special", name)
+            if os.path.exists(path):
+                animator = Animator(path)
+            else:
+                # Pick a random skin to use
+                random_skins_path = os.path.join("skins", "random")
+                skins = list(filter(lambda x: not os.path.isfile(x), os.listdir(random_skins_path)))
+                skin = random.choice(skins)
+                skin_path = os.path.join("skins", "random", skin)
+                animator = Animator(skin_path)
+            
             animator.set_animation("idle")
             self._actors[name] = {
                 "actor": actor,
