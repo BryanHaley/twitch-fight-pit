@@ -1,111 +1,98 @@
 import pygame
 import sys
-import threading
 import random
-from actor import Actor, Animator
+import threading
+import asyncio
 from director import Director
+from game_interface import GameInterface
+from twitch_interface import TwitchInterface
+from settings import Settings
+from twitch import run_twitch_handler
 
-class _GameInterface:
-    def __init__(self):
-        self._actors = {}
-        self._remove_queue = []
-        self._director = None
-    
-    def add_actor(self, name, x):
-        actor = Actor(x, 400)
-        animator = Animator("test/director")
-        animator.set_animation("idle")
-        if name not in self._actors:
-            self._actors[name] = {
-                "actor": actor,
-                "animator": animator,
-                "puppet": False
-            }
-
-    def run(self):
-        if len(self._remove_queue) < 1:
-            return
-        # Don't delete from actors if this actor is currently being puppeted by the director
-        if not self._actors[self._remove_queue[0]]["puppet"]:
-            del self._actors[self._remove_queue.pop(0)]
-    
-    def get_actors(self):
-        return self._actors
-    
-    def set_director(self, director):
-        self._director = director
-    
-    def enqueue_delete_actor(self, actor):
-        self._remove_queue.append(actor)
-
-    def enqueue_command(self, command):
-        if self._director:
-            self._director.enqueue_command(command)
-
-
-GameInterface = _GameInterface()
+def start_twitch_thread():
+    asyncio.run(run_twitch_handler())
 
 if __name__ == "__main__":
-    # Test actor and animation by moving an animation around the screen
+    # Init settings
+    Settings.init_from_file("settings.json")
+
+    # Init pygame
     pygame.init()
-    screen = pygame.display.set_mode((800,600))
+    screen = pygame.display.set_mode(Settings.screen_size)
     clock = pygame.time.Clock()
     deltatime = 0
 
-    GameInterface.add_actor("zingochris", 100)
-    GameInterface.add_actor("aeomech", 700)
-    GameInterface.add_actor("spagettd", 550)
-    GameInterface.add_actor("lifeuhfindsaway", 240)
-
+    # Init director
     director = Director(GameInterface.get_actors())
     director.run()
     GameInterface.set_director(director)
 
-    GameInterface.enqueue_command({
-        "actor1": "zingochris",
-        "actor2": "aeomech",
-        "action": "pet",
-        "metadata": None
-    })
+    # Set up twitch interface
+    TwitchInterface.set_app_id(Settings.app_id)
+    TwitchInterface.set_app_secret(Settings.app_secret)
+    TwitchInterface.set_target_channel(Settings.target_channel)
 
-    GameInterface.enqueue_delete_actor("zingochris")
+    # Add a chatter to test with if needed
+    if Settings.debug:
+        TwitchInterface.add_chatter("testma")
 
+    # Start twitch handling thread
+    twitch_thread = threading.Thread(target=start_twitch_thread, args=[])
+    twitch_thread.start()
+
+    # Game loop
     while True:
+        # Handle quit event
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 director.quit()
+                TwitchInterface.quit()
+                twitch_thread.join(10)
                 sys.exit()
         
+        # Run game interface logic
         GameInterface.run()
 
         # Game logic
         for actor in GameInterface.get_actors():
             actor = GameInterface.get_actors()[actor]
+            # Don't mess with actors that are currently being puppeted by the director
             if actor["puppet"]:
                 continue
-            move = True if random.randint(1,250) == 1 else False
+            # Decide if we want this actor to move or not (if it's sitting around)
+            move = True if random.randint(1,Settings.move_chance) == 1 else False
             # If some actor is just sitting around, consider moving them
             if actor["animator"].get_animation_name() == "idle" and move:
                 actor["animator"].set_animation("walk")
-                actor["actor"].set_goal((random.randint(64, 700), 400))
+                actor["actor"].set_goal((random.randint(Settings.sprite_spacing, Settings.screen_width-Settings.sprite_spacing), Settings.sprite_elevation))
             # If an actor has reached their goal, return them to idle
             if not actor["actor"].get_goal() and actor["animator"].get_animation_name() == "walk":
                 actor["animator"].set_animation("idle")
+            # Run actor logic
             actor["actor"].run(deltatime)
         
-        screen.fill((0,0,0))
+        # Rendering logic
+        # Blank screen
+        screen.fill(Settings.background_color)
 
+        # Iterate through actors
         for actor in GameInterface.get_actors():
             actor = GameInterface.get_actors()[actor]
+            # Animate non-puppeted actors (puppeted actors get animated by the director)
             if not actor["puppet"]:
                 actor["animator"].play(deltatime)
+            # Set flipped status of the animator using the actor's flipped status
             actor["animator"].set_flipped(actor["actor"].get_flipped())
+            # Blit actor onto screen
             screen.blit(
                 pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
                 (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
                 actor["animator"].get_crop_square()
             )
 
+        # Flip buffers
         pygame.display.flip()
-        clock.tick(60)
+
+        # Tick time
+        clock.tick(Settings.framerate)
         deltatime = clock.get_time() * 0.001

@@ -2,6 +2,7 @@ import traceback
 import time
 import threading
 import pygame
+from settings import Settings
 
 class Director:
     """
@@ -40,7 +41,7 @@ class Director:
                     print(traceback.format_exc())
             else:
                 # The clock will tick while commands are being directed so we don't want to double tick
-                self._clock.tick(60)
+                self._clock.tick(Settings.framerate)
     
     def direct_pet_interaction(self, command):
         # Get actors and animators
@@ -65,9 +66,13 @@ class Director:
         while move_to_pos_running != "SUCCESS":
             actor1_animator.play(deltatime)
             actor2_animator.play(deltatime)
-            # TODO: Configure floor height
-            move_to_pos_running = actor1.move_to_point((actor2.get_x()-64, 400), 100, 5, deltatime)
-            self._clock.tick(60)
+            move_to_pos_running = actor1.move_to_point(
+                (actor2.get_x()+(Settings.sprite_spacing if actor1.get_x() < actor2.get_x() else -Settings.sprite_spacing), 
+                 Settings.sprite_elevation), 
+                Settings.run_speed, 
+                Settings.move_epsilon, 
+                deltatime)
+            self._clock.tick(Settings.framerate)
             deltatime = self._clock.get_time() * 0.001
         # Make actors face each other again
         if actor1.get_x() < actor2.get_x():
@@ -85,7 +90,7 @@ class Director:
         while actor1_anim_playing == "RUNNING" or actor2_anim_playing == "RUNNING":
             actor1_anim_playing = actor1_animator.play(deltatime)
             actor2_anim_playing = actor2_animator.play(deltatime)
-            self._clock.tick(60)
+            self._clock.tick(Settings.framerate)
             deltatime = self._clock.get_time() * 0.001
         # Return to idle
         actor1_animator.set_animation("idle")
@@ -185,5 +190,5 @@ if __name__ == "__main__":
             )
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(Settings.framerate)
         deltatime = clock.get_time() * 0.001

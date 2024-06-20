@@ -4,6 +4,7 @@ import sys
 import random
 import traceback
 from resources import ResourceManager
+from settings import Settings
 
 class Actor:
     """
@@ -267,5 +268,5 @@ if __name__ == "__main__":
         screen.fill((0,0,0))
         screen.blit(animator.get_img(), (actor.get_x()-animator.get_half_size(), actor.get_y()-animator.get_half_size()), animator.get_crop_square())
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(Settings.framerate)
         deltatime = clock.get_time() * 0.001
