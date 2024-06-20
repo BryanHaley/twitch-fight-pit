@@ -5,6 +5,46 @@ import random
 from actor import Actor, Animator
 from director import Director
 
+class _GameInterface:
+    def __init__(self):
+        self._actors = {}
+        self._remove_queue = []
+        self._director = None
+    
+    def add_actor(self, name, x):
+        actor = Actor(x, 400)
+        animator = Animator("test/director")
+        animator.set_animation("idle")
+        if name not in self._actors:
+            self._actors[name] = {
+                "actor": actor,
+                "animator": animator,
+                "puppet": False
+            }
+
+    def run(self):
+        if len(self._remove_queue) < 1:
+            return
+        # Don't delete from actors if this actor is currently being puppeted by the director
+        if not self._actors[self._remove_queue[0]]["puppet"]:
+            del self._actors[self._remove_queue.pop(0)]
+    
+    def get_actors(self):
+        return self._actors
+    
+    def set_director(self, director):
+        self._director = director
+    
+    def enqueue_delete_actor(self, actor):
+        self._remove_queue.append(actor)
+
+    def enqueue_command(self, command):
+        if self._director:
+            self._director.enqueue_command(command)
+
+
+GameInterface = _GameInterface()
+
 if __name__ == "__main__":
     # Test actor and animation by moving an animation around the screen
     pygame.init()
@@ -12,59 +52,35 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     deltatime = 0
 
-    actor1 = Actor(100, 400)
-    animator1 = Animator("test/director")
-    animator1.set_animation("idle")
-    actor2 = Actor(600, 400)
-    animator2 = Animator("test/director")
-    animator2.set_animation("idle")
-    actor3 = Actor(200, 400)
-    animator3 = Animator("test/director")
-    animator3.set_animation("idle")
-    actor4 = Actor(400, 400)
-    animator4 = Animator("test/director")
-    animator4.set_animation("idle")
-    actors = {
-        "zingochris": {
-            "actor": actor1,
-            "animator": animator1,
-            "puppet": False
-        },
-        "aeomech": {
-            "actor": actor2,
-            "animator": animator2,
-            "puppet": False
-        },
-        "spagettd": {
-            "actor": actor3,
-            "animator": animator3,
-            "puppet": False
-        },
-        "lifeuhfindsaway": {
-            "actor": actor4,
-            "animator": animator4,
-            "puppet": False
-        }
-    }
-    director = Director(actors)
-    director.run()
+    GameInterface.add_actor("zingochris", 100)
+    GameInterface.add_actor("aeomech", 700)
+    GameInterface.add_actor("spagettd", 550)
+    GameInterface.add_actor("lifeuhfindsaway", 240)
 
-    director.enqueue_command({
+    director = Director(GameInterface.get_actors())
+    director.run()
+    GameInterface.set_director(director)
+
+    GameInterface.enqueue_command({
         "actor1": "zingochris",
         "actor2": "aeomech",
         "action": "pet",
         "metadata": None
     })
 
+    GameInterface.enqueue_delete_actor("zingochris")
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 director.quit()
                 sys.exit()
+        
+        GameInterface.run()
 
         # Game logic
-        for actor in actors:
-            actor = actors[actor]
+        for actor in GameInterface.get_actors():
+            actor = GameInterface.get_actors()[actor]
             if actor["puppet"]:
                 continue
             move = True if random.randint(1,250) == 1 else False
@@ -79,8 +95,8 @@ if __name__ == "__main__":
         
         screen.fill((0,0,0))
 
-        for actor in actors:
-            actor = actors[actor]
+        for actor in GameInterface.get_actors():
+            actor = GameInterface.get_actors()[actor]
             if not actor["puppet"]:
                 actor["animator"].play(deltatime)
             actor["animator"].set_flipped(actor["actor"].get_flipped())
