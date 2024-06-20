@@ -37,6 +37,12 @@ class _TwitchInterface:
             return "FAINTED"
         return "ALIVE"
     
+    def heal_chatter(self, name, healing):
+        self._chatter_metadata[name]["health"] += healing
+        if self._chatter_metadata[name]["health"] > self._chatter_default_health:
+            self._chatter_metadata[name]["health"] = self._chatter_default_health
+        return self._chatter_metadata[name]["health"]
+    
     def set_chatter_default_health(self, health):
         self._chatter_default_health = health
     

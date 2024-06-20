@@ -26,6 +26,7 @@ class _Settings:
             "FRAMERATE": 60,
             "DEFAULT_HEALTH": 20000,
             "DAMAGE_RANGE": [99,9999],
+            "HEALING_RANGE": [99,2999],
             "COUNTER_CHANCE": 10
         }
     
@@ -85,6 +86,8 @@ class _Settings:
         self.default_health = max(0, self._settings_json["DEFAULT_HEALTH"])
         self.damage_range_min = max(0, self._settings_json["DAMAGE_RANGE"][0])
         self.damage_range_max = max(1, self._settings_json["DAMAGE_RANGE"][1])
+        self.healing_range_min = max(0, self._settings_json["HEALING_RANGE"][0])
+        self.healing_range_max = max(1, self._settings_json["HEALING_RANGE"][1])
         self.counter_chance = max(1, self._settings_json["COUNTER_CHANCE"])
 
 Settings = _Settings()

@@ -141,7 +141,12 @@ async def heal_command(cmd: ChatCommand):
     commander = str(cmd.user.name).lower()
     chatter = str(cmd.parameter).lower()
     # Handle command
-    await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW")
+    await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW", False)
+    # Calculate and apply healing value
+    healing = random.randint(Settings.healing_range_min, Settings.healing_range_max)
+    new_health = TwitchInterface.heal_chatter(chatter, healing)
+    # Send reply
+    await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW zingoW zingoW')
     return "SUCCESS"
 
 # Callback for the defend command
