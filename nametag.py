@@ -4,7 +4,7 @@ class Nametag:
     def __init__(self, name):
         self._name = name
         self._img = Settings.nametag_font.render(name, Settings.nametag_antialias, Settings.nametag_color)
-    
+
     def get_img(self):
         return self._img
 
@@ -14,6 +14,7 @@ class Nametag:
         x = our_actor["actor"].get_x()
         y = our_actor["actor"].get_y()-our_actor["animator"].get_half_size()
         # If there are other actors to the right overlapping us, move up
+        x_min_bound = x-self._img.get_rect().width/2
         x_max_bound = x+self._img.get_rect().width/2
         overlaps = 0
         for actor in actors:
@@ -25,7 +26,10 @@ class Nametag:
                 continue
             # Check bounds
             actor_x_min_bound = actor["actor"].get_x()-actor["nametag"].get_img().get_rect().width/2
-            if actor_x_min_bound < x_max_bound:
+            actor_x_max_bound = actor["actor"].get_x()+actor["nametag"].get_img().get_rect().width/2
+            if (((actor_x_min_bound >= x_min_bound and actor_x_min_bound <= x_max_bound) or
+                (actor_x_max_bound >= x_min_bound and actor_x_max_bound <= x_max_bound)) and
+                actor_x_min_bound >= x_min_bound):
                 overlaps += 1
         # Limit y so it doesn't just go to the top of the screen
         y -= (overlaps%Settings.nametag_overlap_limit)*(Settings.nametag_font_size+2)
