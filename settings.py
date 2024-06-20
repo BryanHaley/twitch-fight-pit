@@ -1,5 +1,6 @@
 import json
 import sys
+import pygame
 
 class _Settings:
     def __init__(self):
@@ -27,7 +28,12 @@ class _Settings:
             "DEFAULT_HEALTH": 20000,
             "DAMAGE_RANGE": [99,9999],
             "HEALING_RANGE": [99,2999],
-            "COUNTER_CHANCE": 10
+            "COUNTER_CHANCE": 10,
+            "NAMETAG_FONT": "Verdana",
+            "NAMETAG_FONT_SIZE": 16,
+            "NAMETAG_COLOR": [0,0,0],
+            "NAMETAG_ANTIALIAS": True,
+            "NAMETAG_OVERLAP_LIMIT": 5
         }
     
     def init_from_file(self, filepath):
@@ -89,5 +95,14 @@ class _Settings:
         self.healing_range_min = max(0, self._settings_json["HEALING_RANGE"][0])
         self.healing_range_max = max(1, self._settings_json["HEALING_RANGE"][1])
         self.counter_chance = max(1, self._settings_json["COUNTER_CHANCE"])
+        self.nametag_font_size = max(6, self._settings_json["NAMETAG_FONT_SIZE"])
+        self.nametag_font = pygame.font.SysFont(self._settings_json["NAMETAG_FONT"], self.nametag_font_size)
+        self.nametag_color = (
+            max(0, min(255, self._settings_json["NAMETAG_COLOR"][0])),
+            max(0, min(255, self._settings_json["NAMETAG_COLOR"][1])),
+            max(0, min(255, self._settings_json["NAMETAG_COLOR"][2]))
+        )
+        self.nametag_antialias = self._settings_json["NAMETAG_ANTIALIAS"]
+        self.nametag_overlap_limit = max(1, self._settings_json["NAMETAG_OVERLAP_LIMIT"])
 
 Settings = _Settings()

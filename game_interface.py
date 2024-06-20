@@ -1,6 +1,7 @@
 import time
 from actor import Actor, Animator
 from settings import Settings
+from nametag import Nametag
 
 class _GameInterface:
     def __init__(self):
@@ -17,7 +18,8 @@ class _GameInterface:
                 "actor": actor,
                 "animator": animator,
                 "puppet": False,
-                "defended": False
+                "defended": False,
+                "nametag": Nametag(name)
             }
 
     def defend_actor(self, name):
