@@ -3,6 +3,7 @@ import random
 import traceback
 from twitch_interface import TwitchInterface
 from game_interface import GameInterface
+from settings import Settings
 from twitchAPI.twitch import Twitch
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.type import AuthScope, ChatEvent
@@ -16,15 +17,20 @@ async def on_ready(ready_event: EventData):
 # Callback for messages in chat
 async def on_message(msg: ChatMessage):
     try:
-        print(f'{msg.user.name}: {msg.text}')
+        if Settings.debug:
+            print(f'{msg.user.name}: {msg.text}')
         TwitchInterface.add_chatter(str(msg.user.name).lower())
     except:
         print("Failed to process chat message")
         print(traceback.format_exc())
 
-# Callback for the pet command
-async def pet_command(cmd: ChatCommand):
+# Function to handle typical commands
+async def handle_command(cmd, action, action_past_tense, emote, send_reply=True):
     try:
+        # Ignore zero length parameters
+        if len(cmd.parameter) < 1:
+            return "FAILURE"
+        
         # Get actors
         commander = str(cmd.user.name).lower()
         chatter = str(cmd.parameter).lower()
@@ -32,10 +38,21 @@ async def pet_command(cmd: ChatCommand):
         # Add the commander chatter if he isn't there already
         TwitchInterface.add_chatter(commander)
 
+        # Ignore command if commander is in ignore list or has recently sent a command
+        if (commander in TwitchInterface.get_ignore_list() or
+            time.time() < TwitchInterface.get_chatter_metadata()[commander]["last_command_time"]+Settings.command_timeout_per_user):
+            print(f'{commander} is in ignore list or trying to send commands too quickly')
+            return "FAILURE"
+        
+        # Ignore command if last command in general was too recent
+        if time.time() < TwitchInterface.get_last_command_time()+Settings.command_timeout:
+            print("Chatters are trying to send commands too quickly; ignoring")
+            return "FAILURE"
+
         # Non-commanding user must already be in chatters for this to work
         if chatter not in TwitchInterface.get_chatter_metadata():
-            await cmd.reply(f'{commander} tried to pet {chatter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
-            return
+            await cmd.reply(f'{commander} tried to {action} {chatter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            return "FAILURE"
         
         # Queue the command
         GameInterface.enqueue_command({
@@ -46,10 +63,20 @@ async def pet_command(cmd: ChatCommand):
         })
 
         # Tell the user it's happening
-        await cmd.reply(f'{commander} pet {chatter}! Petthezingo Petthezingo Petthezingo')
+        if send_reply:
+            await cmd.reply(f'{commander} {action_past_tense} {chatter}! {emote} {emote} {emote}')
+
+        # Update last command time
+        TwitchInterface.set_chatter_last_command_time(commander)
+
+        return "SUCCESS"
     except:
-        print("Failed to process pet command from {}".format(cmd.user.name))
+        print("Failed to process {} command from {}".format(action, cmd.user.name))
         print(traceback.format_exc())
+
+# Callback for the pet command
+async def pet_command(cmd: ChatCommand):
+    await handle_command(cmd, "pet", "pet", "Petthezingo")
 
 
 # this is where we set up the bot

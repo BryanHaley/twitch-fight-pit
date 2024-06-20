@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 import threading
 import asyncio
 from director import Director
@@ -28,9 +29,11 @@ if __name__ == "__main__":
     GameInterface.set_director(director)
 
     # Set up twitch interface
+    # TODO -- These are all probably unnecessary and can just be used from Settings directly
     TwitchInterface.set_app_id(Settings.app_id)
     TwitchInterface.set_app_secret(Settings.app_secret)
     TwitchInterface.set_target_channel(Settings.target_channel)
+    TwitchInterface.set_ignore_list(Settings.ignore_list)
 
     # Add a chatter to test with if needed
     if Settings.debug:
@@ -83,12 +86,13 @@ if __name__ == "__main__":
                 actor["animator"].play(deltatime)
             # Set flipped status of the animator using the actor's flipped status
             actor["animator"].set_flipped(actor["actor"].get_flipped())
-            # Blit actor onto screen
-            screen.blit(
-                pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
-                (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
-                actor["animator"].get_crop_square()
-            )
+            # Blit actor onto screen if the timeout hasn't elapsed
+            if time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout:
+                screen.blit(
+                    pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
+                    (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
+                    actor["animator"].get_crop_square()
+                )
 
         # Flip buffers
         pygame.display.flip()

@@ -9,6 +9,7 @@ class _TwitchInterface:
         self._app_id = ""
         self._app_secret = ""
         self._target_channel = ""
+        self._last_command_time = time.time()
         self._want_quit = False
     
     # This actually gets called every time a chatter chats
@@ -17,15 +18,26 @@ class _TwitchInterface:
             return
         if name not in self._chatter_metadata:
             self._chatter_metadata[name] = {
-                "last_chat_time": 0
+                "last_chat_time": 0,
+                "last_command_time": 0
             }
         self.set_chatter_last_chat_time(name)
+        self.set_chatter_last_command_time(name)
         GameInterface.add_actor(name, random.randint(100,700))
+    
+    def update_last_command_time(self):
+        self._last_command_time = time.time()
     
     def set_chatter_last_chat_time(self, name):
         if name in self._ignore_list or name not in self._chatter_metadata:
             return
         self._chatter_metadata[name]["last_chat_time"] = time.time()
+    
+    def set_chatter_last_command_time(self, name):
+        if name in self._ignore_list or name not in self._chatter_metadata:
+            return
+        self._chatter_metadata[name]["last_command_time"] = time.time()
+        self.update_last_command_time()
     
     def set_app_id(self, app_id):
         self._app_id = app_id
@@ -59,5 +71,8 @@ class _TwitchInterface:
     
     def get_ignore_list(self):
         return self._ignore_list
+
+    def get_last_command_time(self):
+        return self._last_command_time
 
 TwitchInterface = _TwitchInterface()
