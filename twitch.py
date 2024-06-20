@@ -56,7 +56,7 @@ async def handle_command(cmd, commander, chatter, action, action_past_tense, emo
 
         # Tell the user it's happening
         if send_reply:
-            await cmd.reply(f'{commander} {action_past_tense} {chatter}! {emote} {emote} {emote}')
+            await cmd.reply(f'{commander} {action_past_tense} {chatter}! {emote}')
 
         # Update last command time
         TwitchInterface.set_chatter_last_command_time(commander)
@@ -91,7 +91,11 @@ async def attack_command(cmd: ChatCommand):
         return "FAILURE"
     # Determine damage and counter
     damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+    if GameInterface.is_actor_defended(chatter):
+        damage = int(damage/2)
     counter_damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+    if GameInterface.is_actor_defended(commander):
+        counter_damage = int(damage/2)
     counter = True if random.randint(1,Settings.counter_chance) == 1 else False
     # Apply damage
     chatter_status = TwitchInterface.damage_chatter(chatter, damage)
@@ -146,7 +150,7 @@ async def heal_command(cmd: ChatCommand):
     healing = random.randint(Settings.healing_range_min, Settings.healing_range_max)
     new_health = TwitchInterface.heal_chatter(chatter, healing)
     # Send reply
-    await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW zingoW zingoW')
+    await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW')
     return "SUCCESS"
 
 # Callback for the defend command
@@ -159,6 +163,8 @@ async def defend_command(cmd: ChatCommand):
     chatter = str(cmd.parameter).lower()
     # Handle command
     await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
+    # Set defended status on chatter
+    GameInterface.defend_actor(chatter)
     return "SUCCESS"
 
 

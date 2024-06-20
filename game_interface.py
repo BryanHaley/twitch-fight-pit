@@ -16,8 +16,23 @@ class _GameInterface:
             self._actors[name] = {
                 "actor": actor,
                 "animator": animator,
-                "puppet": False
+                "puppet": False,
+                "defended": False
             }
+
+    def defend_actor(self, name):
+        if name in self._actors:
+            self._actors[name]["defended"] = True
+    
+    def undefend_actor(self, name):
+        if name in self._actors:
+            self._actors[name]["defended"] = False
+    
+    def is_actor_defended(self, name):
+        if name in self._actors:
+            return self._actors[name]["defended"]
+        else:
+            return False
 
     def run(self):
         if len(self._remove_queue) < 1:

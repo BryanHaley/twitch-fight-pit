@@ -8,6 +8,7 @@ from director import Director
 from game_interface import GameInterface
 from twitch_interface import TwitchInterface
 from settings import Settings
+from resources import ResourceManager
 from twitch import run_twitch_handler
 
 def start_twitch_thread():
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode(Settings.screen_size)
     clock = pygame.time.Clock()
+    bubble_img = ResourceManager.load_img("bubble.png")
     deltatime = 0
 
     # Init director
@@ -81,6 +83,7 @@ if __name__ == "__main__":
 
         # Iterate through actors
         for actor in GameInterface.get_actors():
+            actor_name = actor
             actor = GameInterface.get_actors()[actor]
             # Animate non-puppeted actors (puppeted actors get animated by the director)
             if not actor["puppet"]:
@@ -89,6 +92,12 @@ if __name__ == "__main__":
             actor["animator"].set_flipped(actor["actor"].get_flipped())
             # Blit actor onto screen if the timeout hasn't elapsed
             if time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout:
+                if GameInterface.is_actor_defended(actor_name):
+                    screen.blit(
+                        bubble_img, 
+                        (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
+                        bubble_img.get_rect()
+                    )
                 screen.blit(
                     pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
                     (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
