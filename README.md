@@ -115,4 +115,4 @@ faint_24_false_0.png
 
 Within the spritesheet, your animation frames must be square; the number of frames in the animation is determined by how many multiples of the height the width is. That is to say, a 512x128 spritesheet will be determined to be four 128x128 frames.
 
-Spritesheets do not need to be all the same size; for example idle_12_true_0.png can have 128x128 frames while attack_12_false_0.png can have 512x512 frames. The anchor point for each animation frame is the center of the frame, and the floor is assumed to be `SPRITE_MID_HEIGHT` (default: 64) pixels below the center of the frame.
+Spritesheets do not need to be all the same size; for example `idle_12_true_0.png` can have 128x128 frames while `attack_12_false_0.png` can have 512x512 frames. The anchor point for each animation frame is the center of the frame, and the floor is assumed to be `SPRITE_MID_HEIGHT` (default: 64) pixels below the center of the frame.
