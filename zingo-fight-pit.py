@@ -45,6 +45,7 @@ if __name__ == "__main__":
     # Add a chatter to test with if needed
     if Settings.debug:
         TwitchInterface.add_chatter("testma")
+    TwitchInterface.add_chatter(TwitchInterface.get_target_channel())
 
     # Start twitch handling thread
     twitch_thread = threading.Thread(target=start_twitch_thread, args=[])
