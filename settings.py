@@ -10,7 +10,8 @@ class _Settings:
             "TWITCH_APP_SECRET": None,
             "TWITCH_CHANNEL": None,
             "BACKGROUND_COLOR": [0,177,64],
-            "RENDERING_TIMEOUT_SECONDS": 86400,
+            "RENDERING_TIMEOUT_SECONDS": None,
+            "CHATTER_INACTIVITY_TIMEOUT": None,
             "COMMAND_TIMEOUT_SECONDS": 0,
             "COMMAND_TIMEOUT_PER_USER": 0,
             "SCREEN_WIDTH": 800,
@@ -64,7 +65,8 @@ class _Settings:
         )
 
         # Timeouts
-        self.rendering_timeout = max(30, self._settings_json["RENDERING_TIMEOUT_SECONDS"])
+        self.chatter_inactivity_timeout = max(30, self._settings_json["CHATTER_INACTIVITY_TIMEOUT"]) if self._settings_json["CHATTER_INACTIVITY_TIMEOUT"] else None
+        self.rendering_timeout = max(30, self._settings_json["RENDERING_TIMEOUT_SECONDS"]) if self._settings_json["RENDERING_TIMEOUT_SECONDS"] else None
         self.command_timeout = max(0, self._settings_json["COMMAND_TIMEOUT_SECONDS"])
         self.command_timeout_per_user = max(0, self._settings_json["COMMAND_TIMEOUT_PER_USER"])
         self.screen_width = max(320, self._settings_json["SCREEN_WIDTH"])

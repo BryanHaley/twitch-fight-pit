@@ -1,5 +1,6 @@
 import time
 import random
+import traceback
 from game_interface import GameInterface
 
 class _TwitchInterface:
@@ -57,6 +58,17 @@ class _TwitchInterface:
             return
         self._chatter_metadata[name]["last_command_time"] = time.time()
         self.update_last_command_time()
+    
+    def delete_chatter(self, name):
+        try:
+            if name not in self._chatter_metadata:
+                return "SUCCESS"
+            del self._chatter_metadata[name]
+            return "SUCCESS"
+        except:
+            print("Failed to delete chatter {}".format(name))
+            print(traceback.format_exc())
+            return "FAILURE"
     
     def set_app_id(self, app_id):
         self._app_id = app_id

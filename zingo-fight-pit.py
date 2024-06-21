@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 # Set flipped status of the animator using the actor's flipped status
                 actor["animator"].set_flipped(actor["actor"].get_flipped())
                 # Blit actor onto screen if the timeout hasn't elapsed
-                if time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout:
+                if not Settings.rendering_timeout or time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout:
                     if GameInterface.is_actor_defended(actor_name):
                         screen.blit(
                             bubble_img, 

@@ -85,139 +85,164 @@ async def handle_command(cmd, commander, chatter, action, action_past_tense, emo
 
 # Callback for the pet command
 async def pet_command(cmd: ChatCommand):
-    # Ignore zero length parameters
-    if len(cmd.parameter) < 1:
+    try:
+        # Ignore zero length parameters
+        if len(cmd.parameter) < 1:
+            return "FAILURE"
+        # Get actors
+        commander = str(cmd.user.name).lower()
+        chatter = str(cmd.parameter).lower()
+        # Handle command
+        await handle_command(cmd, commander, chatter, "pet", "pet", "Petthezingo")
+    except:
+        print("Unknown error occurred handling pet command")
+        print(traceback.format_exc())
         return "FAILURE"
-    # Get actors
-    commander = str(cmd.user.name).lower()
-    chatter = str(cmd.parameter).lower()
-    # Handle command
-    await handle_command(cmd, commander, chatter, "pet", "pet", "Petthezingo")
 
 # Callback for the squash command
 async def attack_command(cmd: ChatCommand):
-    # Ignore zero length parameters
-    if len(cmd.parameter) < 1:
-        return "FAILURE"
-    # Get actors
-    commander = str(cmd.user.name).lower()
-    chatter = str(cmd.parameter).lower()
-    # Handle command
-    result = await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot", False)
-    if result != "SUCCESS":
-        return "FAILURE"
-    # Determine damage and counter
-    damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
-    if GameInterface.is_actor_defended(chatter):
-        damage = int(damage/2)
-    counter_damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
-    if GameInterface.is_actor_defended(commander):
-        counter_damage = int(damage/2)
-    counter = True if random.randint(1,Settings.counter_chance) == 1 else False
-    # Apply damage
-    chatter_status = TwitchInterface.damage_chatter(chatter, damage)
-    if chatter_status == "FAINTED":
-        counter = False # Can't counter if you've fainted
-        GameInterface.enqueue_command({
-            "action": "faint",
-            "actor": chatter,
-            "metadata": None
-        })
-    # If countering, queue that up
-    if counter:
-        GameInterface.enqueue_command({
-            "action": "squash",
-            "actor1": chatter,
-            "actor2": commander,
-            "metadata": None
-        })
-    commander_status = "ALIVE"
-    if counter:
-        commander_status = TwitchInterface.damage_chatter(commander, counter_damage)
-        if commander_status == "FAINTED":
+    try:
+        # Ignore zero length parameters
+        if len(cmd.parameter) < 1:
+            return "FAILURE"
+        # Get actors
+        commander = str(cmd.user.name).lower()
+        chatter = str(cmd.parameter).lower()
+        # Handle command
+        result = await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot", False)
+        if result != "SUCCESS":
+            return "FAILURE"
+        # Determine damage and counter
+        damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+        if GameInterface.is_actor_defended(chatter):
+            damage = int(damage/2)
+        counter_damage = random.randint(Settings.damage_range_min, Settings.damage_range_max)
+        if GameInterface.is_actor_defended(commander):
+            counter_damage = int(damage/2)
+        counter = True if random.randint(1,Settings.counter_chance) == 1 else False
+        # Apply damage
+        chatter_status = TwitchInterface.damage_chatter(chatter, damage)
+        if chatter_status == "FAINTED":
+            counter = False # Can't counter if you've fainted
             GameInterface.enqueue_command({
                 "action": "faint",
-                "actor": commander,
+                "actor": chatter,
                 "metadata": None
             })
-    # Build message
-    msg = f'{commander} squashed {chatter} for {damage} damage!'
-    if counter:
-        msg += f' {chatter} counters for {counter_damage} damage!'
-    msg += ' zingo37Foot zingo37Foot zingo37Foot'
-    if chatter_status == "FAINTED":
-        msg += f' {chatter} fainted! zingocSad'
-    if commander_status == "FAINTED":
-        msg += f' {commander} fainted! zingocSad'
-    # Send message
-    await cmd.reply(msg)
-    return "SUCCESS"
+        # If countering, queue that up
+        if counter:
+            GameInterface.enqueue_command({
+                "action": "squash",
+                "actor1": chatter,
+                "actor2": commander,
+                "metadata": None
+            })
+        commander_status = "ALIVE"
+        if counter:
+            commander_status = TwitchInterface.damage_chatter(commander, counter_damage)
+            if commander_status == "FAINTED":
+                GameInterface.enqueue_command({
+                    "action": "faint",
+                    "actor": commander,
+                    "metadata": None
+                })
+        # Build message
+        msg = f'{commander} squashed {chatter} for {damage} damage!'
+        if counter:
+            msg += f' {chatter} counters for {counter_damage} damage!'
+        msg += ' zingo37Foot zingo37Foot zingo37Foot'
+        if chatter_status == "FAINTED":
+            msg += f' {chatter} fainted! zingocSad'
+        if commander_status == "FAINTED":
+            msg += f' {commander} fainted! zingocSad'
+        # Send message
+        await cmd.reply(msg)
+        return "SUCCESS"
+    except:
+        print("Unknown error occurred handling attack command")
+        print(traceback.format_exc())
+        return "FAILURE"
 
 # Callback for the heal command
 async def heal_command(cmd: ChatCommand):
-    # Ignore zero length parameters
-    if len(cmd.parameter) < 1:
+    try:
+        # Ignore zero length parameters
+        if len(cmd.parameter) < 1:
+            return "FAILURE"
+        # Get actors
+        commander = str(cmd.user.name).lower()
+        chatter = str(cmd.parameter).lower()
+        # Handle command
+        await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW", False)
+        # Calculate and apply healing value
+        healing = random.randint(Settings.healing_range_min, Settings.healing_range_max)
+        new_health = TwitchInterface.heal_chatter(chatter, healing)
+        # Send reply
+        await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW')
+        return "SUCCESS"
+    except:
+        print("Unknown error occurred handling heal command")
+        print(traceback.format_exc())
         return "FAILURE"
-    # Get actors
-    commander = str(cmd.user.name).lower()
-    chatter = str(cmd.parameter).lower()
-    # Handle command
-    await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW", False)
-    # Calculate and apply healing value
-    healing = random.randint(Settings.healing_range_min, Settings.healing_range_max)
-    new_health = TwitchInterface.heal_chatter(chatter, healing)
-    # Send reply
-    await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW')
-    return "SUCCESS"
 
 # Callback for the defend command
 async def defend_command(cmd: ChatCommand):
-    # Ignore zero length parameters
-    if len(cmd.parameter) < 1:
+    try:
+        # Ignore zero length parameters
+        if len(cmd.parameter) < 1:
+            return "FAILURE"
+        # Get actors
+        commander = str(cmd.user.name).lower()
+        chatter = str(cmd.parameter).lower()
+        # Handle command
+        await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
+        # Set defended status on chatter
+        GameInterface.defend_actor(chatter)
+        return "SUCCESS"
+    except:
+        print("Unknown error occurred handling defend command")
+        print(traceback.format_exc())
         return "FAILURE"
-    # Get actors
-    commander = str(cmd.user.name).lower()
-    chatter = str(cmd.parameter).lower()
-    # Handle command
-    await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
-    # Set defended status on chatter
-    GameInterface.defend_actor(chatter)
-    return "SUCCESS"
 
 # Callback for the skin command
 async def skin_command(cmd: ChatCommand):
-    # Get parameters
-    commander = str(cmd.user.name).lower()
-    skin = str(cmd.parameter).lower()
-    # Add the commander chatter if he isn't there already
-    TwitchInterface.add_chatter(commander)
-    # Ignore command if commander is in ignore list or has recently sent a command
-    if (commander in TwitchInterface.get_ignore_list() or
-        time.time() < TwitchInterface.get_chatter_metadata()[commander]["last_command_time"]+Settings.command_timeout_per_user):
-        print(f'{commander} is in ignore list or trying to send commands too quickly')
-        return "FAILURE"
-    # Ignore command if last command in general was too recent
-    if time.time() < TwitchInterface.get_last_command_time()+Settings.command_timeout:
-        print("Chatters are trying to send commands too quickly; ignoring")
-        return "FAILURE"
-    # Print available skins to chat if a skin wasn't specified
-    if len(cmd.parameter) < 1:
-        skins_msg = split_skins_message(SkinOverrides.get_available_skins())
-        for msg in skins_msg:
-            await cmd.reply(msg)
+    try:
+        # Get parameters
+        commander = str(cmd.user.name).lower()
+        skin = str(cmd.parameter).lower()
+        # Add the commander chatter if he isn't there already
+        TwitchInterface.add_chatter(commander)
+        # Ignore command if commander is in ignore list or has recently sent a command
+        if (commander in TwitchInterface.get_ignore_list() or
+            time.time() < TwitchInterface.get_chatter_metadata()[commander]["last_command_time"]+Settings.command_timeout_per_user):
+            print(f'{commander} is in ignore list or trying to send commands too quickly')
+            return "FAILURE"
+        # Ignore command if last command in general was too recent
+        if time.time() < TwitchInterface.get_last_command_time()+Settings.command_timeout:
+            print("Chatters are trying to send commands too quickly; ignoring")
+            return "FAILURE"
+        # Print available skins to chat if a skin wasn't specified
+        if len(cmd.parameter) < 1:
+            skins_msg = split_skins_message(SkinOverrides.get_available_skins())
+            for msg in skins_msg:
+                await cmd.reply(msg)
+            return "SUCCESS"
+        # Set skin override
+        result = SkinOverrides.set_override(commander, skin)
+        if result == "FAILURE":
+            await cmd.reply(f'Selecting skin {skin} failed. Did you spell it correctly?')
+            return "FAILURE"
+        GameInterface.enqueue_command({
+                "action": "update_skin",
+                "actor": commander,
+                "metadata": None
+            })
+        await cmd.reply(f'Updating skin for {commander} to {skin} zingocSmile')
         return "SUCCESS"
-    # Set skin override
-    result = SkinOverrides.set_override(commander, skin)
-    if result == "FAILURE":
-        await cmd.reply(f'Selecting skin {skin} failed. Did you spell it correctly?')
+    except:
+        print("Unknown error occurred handling skin command")
+        print(traceback.format_exc())
         return "FAILURE"
-    GameInterface.enqueue_command({
-            "action": "update_skin",
-            "actor": commander,
-            "metadata": None
-        })
-    await cmd.reply(f'Updating skin for {commander} to {skin} zingocSmile')
-    return "SUCCESS"
 
 
 # this is where we set up the bot
@@ -250,6 +275,16 @@ async def run_twitch_handler():
     while not TwitchInterface.want_quit():
         if TwitchInterface.want_quit():
             break
+        # Check if we need to delete any chatters
+        delete_queue = []
+        for chatter in TwitchInterface.get_chatter_metadata():
+            chatter_name = chatter
+            chatter = TwitchInterface.get_chatter_metadata()[chatter]
+            if Settings.chatter_inactivity_timeout and time.time() > chatter["last_chat_time"] + Settings.chatter_inactivity_timeout:
+                GameInterface.enqueue_delete_actor(chatter_name)
+                delete_queue += [chatter_name]
+        for chatter in delete_queue:
+            TwitchInterface.delete_chatter(chatter)
         time.sleep(0.1)
     
     chat.stop()
