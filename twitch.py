@@ -197,7 +197,7 @@ async def defend_command(cmd: ChatCommand):
         # Handle command
         await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
         # Set defended status on chatter
-        GameInterface.defend_actor(chatter)
+        # GameInterface.defend_actor(chatter) # Set this during animation instead
         return "SUCCESS"
     except:
         print("Unknown error occurred handling defend command")

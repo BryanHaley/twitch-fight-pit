@@ -115,6 +115,10 @@ class Director:
         self.make_actors_face_each_other(actor1, actor2)
         # Play animations
         self.play_interaction_animations(actor1_animator, actor2_animator, actor1_anim, actor2_anim)
+        if command["action"] == "squash":
+            GameInterface.undefend_actor(command["actor2"])
+        elif command["action"] == "defend":
+            GameInterface.defend_actor(command["actor2"])
         # Return to idle
         actor1_animator.set_animation("idle")
         actor2_animator.set_animation("idle")

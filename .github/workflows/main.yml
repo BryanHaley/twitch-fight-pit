@@ -30,6 +30,6 @@ jobs:
             zingo-fight-pit.exe
             _internal
             skins/*
-            bubble.png
+            shield.png
             settings.json
       

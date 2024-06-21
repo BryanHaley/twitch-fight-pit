@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # Init some state
     screen = pygame.display.set_mode(Settings.screen_size)
     clock = pygame.time.Clock()
-    bubble_img = ResourceManager.load_img("bubble.png")
+    shield_img = ResourceManager.load_img("shield.png")
     deltatime = 0
 
     # Init director
@@ -103,9 +103,9 @@ if __name__ == "__main__":
                         time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout):
                         if GameInterface.is_actor_defended(actor_name):
                             screen.blit(
-                                bubble_img, 
-                                (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
-                                bubble_img.get_rect()
+                                shield_img, 
+                                (actor["actor"].get_x()-shield_img.get_rect().width/2, actor["actor"].get_y()-shield_img.get_rect().height/2), 
+                                shield_img.get_rect()
                             )
                         screen.blit(
                             pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
@@ -123,9 +123,9 @@ if __name__ == "__main__":
                         time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout):
                         if GameInterface.is_actor_defended(actor_name):
                             screen.blit(
-                                bubble_img, 
-                                (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
-                                bubble_img.get_rect()
+                                shield_img, 
+                                (actor["actor"].get_x()-shield_img.get_rect().width/2, actor["actor"].get_y()-shield_img.get_rect().height/2), 
+                                shield_img.get_rect()
                             )
                         screen.blit(
                             pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 

@@ -33,7 +33,7 @@ class _TwitchInterface:
 
     def damage_chatter(self, name, damage):
         self._chatter_metadata[name]["health"] -= damage
-        GameInterface.undefend_actor(name)
+        # GameInterface.undefend_actor(name) # Set this during the animation instead
         if self._chatter_metadata[name]["health"] <= 0:
             self._chatter_metadata[name]["health"] = self._chatter_default_health
             return "FAINTED"
