@@ -28,8 +28,12 @@ def split_skins_message(skins_list):
 
 # Callback for the chat connection being ready
 async def on_ready(ready_event: EventData):
-    print('Bot is ready for work; joining channel {}'.format(TwitchInterface.get_target_channel()))
-    await ready_event.chat.join_room(TwitchInterface.get_target_channel())
+    try:
+        print('Bot is ready for work; joining channel {}'.format(TwitchInterface.get_target_channel()))
+        await ready_event.chat.join_room(TwitchInterface.get_target_channel())
+        await ready_event.chat.send_message(TwitchInterface.get_target_channel(), "Fight pit bot has connected to chat 👊")
+    except:
+        print(traceback.format_exc())
 
 # Callback for messages in chat
 async def on_message(msg: ChatMessage):
