@@ -294,7 +294,9 @@ async def run_twitch_handler():
         for chatter in TwitchInterface.get_chatter_metadata():
             chatter_name = chatter
             chatter = TwitchInterface.get_chatter_metadata()[chatter]
-            if Settings.chatter_inactivity_timeout and time.time() > chatter["last_chat_time"] + Settings.chatter_inactivity_timeout:
+            if (Settings.chatter_inactivity_timeout and 
+                time.time() > chatter["last_chat_time"] + Settings.chatter_inactivity_timeout
+                and chatter_name != TwitchInterface.get_target_channel()):
                 GameInterface.enqueue_delete_actor(chatter_name)
                 delete_queue += [chatter_name]
         for chatter in delete_queue:

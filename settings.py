@@ -50,7 +50,7 @@ class _Settings:
         # Get twitch settings
         self.app_id = self._settings_json["TWITCH_APP_ID"]
         self.app_secret = self._settings_json["TWITCH_APP_SECRET"]
-        self.target_channel = self._settings_json["TWITCH_CHANNEL"]
+        self.target_channel = self._settings_json["TWITCH_CHANNEL"].lower()
 
         # Sanity check
         if not self.app_id or not self.app_secret or not self.target_channel:
