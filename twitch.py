@@ -15,7 +15,7 @@ def split_skins_message(skins_list):
     msg_list = []
     current_msg = "Available skins: "
     for i, skin in enumerate(skins_list):
-        if len(current_msg) + len(skin) + 2 >= 500:
+        if len(current_msg) + len(skin) + 4 >= 500:
             msg_list += [current_msg]
             current_msg = ""
         if i < len(skins_list)-1:
