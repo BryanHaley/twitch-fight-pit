@@ -23,80 +23,6 @@ Chatters can then send the following commands (customizable):
 !lurk   : Remove chatter from fight pit
 ```
 
-## Config
-
-### settings.json
-
-Reference `settings.py` for default values.
-```
-"TWITCH_APP_ID": Get from dev.twitch.tv.
-"TWITCH_APP_SECRET": Get from dev.twitch.tv.
-"TWITCH_CHANNEL": Set to desired channel.
-"BACKGROUND_COLOR": List of three colors 0-255 representing red, green, and blue for the background color.
-"RENDERING_TIMEOUT_SECONDS": If set, the app window will go blank if no one sends any recognized commands for this length of time.
-"CHATTER_INACTIVITY_TIMEOUT": If set, the chatter will be removed from the fight pit if they haven't chatted for this length of time.
-"COMMAND_TIMEOUT_SECONDS": If any chatter has sent a recognized command less than this length of time ago the subsequent command will be ignored.
-"COMMAND_TIMEOUT_PER_USER": If a chatter has sent a recognized command less than this length of time ago the subsequent command from this chatter will be ignored.
-"SCREEN_WIDTH": Horizontal size in pixels of game window.
-"SCREEN_HEIGHT": Vertical size in pixels of game window.
-"DEBUG": Enables debug routines.
-"DEBUG_CHARACTERS": Adds test chatters for testing commands on. ("DEBUG" must be true).
-"IGNORE_LIST": List of lowercase twitch handles to ignore.
-"FLOOR_HEIGHT": Position in pixels from the top of the window for the floor. If not defined, it is set to the vertical center of the game window.
-"SPRITE_MID_HEIGHT": The center of the sprite will be this amount of pixels above the floor.
-"SPRITE_SPACING": Chatters will be this distance in pixels apart when interacting with each other.
-"MOVE_CHANCE": Every frame while the chatter is standing still idling there is a 1 in MOVE_CHANCE chance they will start moving again.
-"WALK_SPEED": Speed in pixels per second that chatters walk at.
-"RUN_SPEED": Speed in pixels per second that chatters run at when approaching for an interaction.
-"MOVE_EPSILON": Distance from the target a chatter can be to have "arrived". May need to be increased for very high walk or run speeds.
-"FRAMERATE": Target frames per second for the app. 60 or a multiple of it is recommended.
-"DEFAULT_HEALTH": Starting health of chatters.
-"DAMAGE_RANGE": List of two numbers that defined the possible range of damage done with an attack.
-"HEALING_RANGE": List of two numbers that defined the possible range of health points done with a healing.
-"COUNTER_CHANCE": When attacked there is a 1 in COUNTER_CHANCE chance the chatter attacked will counter.
-"NAMETAG_FONT": Name of system font for nametags.
-"NAMETAG_FONT_SIZE": Font size for nametags.
-"NAMETAG_COLOR": List of three colors 0-255 representing red, green, and blue for the nametag color.
-"NAMETAG_ANTIALIAS": Apply anti-aliasing to nametags.
-"NAMETAG_OVERLAP_LIMIT": How many nametags can stack on top of each other to avoid overlapping.
-"MINIMUM_FAINT_TIME": When a chatter faints, no further interactions will be processed for this time period.
-"INFO_CMD": chat command giving info about the fight pit bot.
-"ATTACK_CMD": chat command to attack another chatter.
-"ATTACK_PAST_TENSE": verbiage for the past tense of an attack.
-"HEAL_CMD": chat command to heal another chatter.
-"HEALED_PAST_TEST": verbiage for the past tense of a healing.
-"DEFEND_CMD": chat command to defend another chatter.
-"DEFEND_PAST_TENSE": verbiage for the past tense of a defense.
-"PET_CMD": chat command to pet another chatter.
-"PET_PAST_TENSE": verbiage for the past tense of a pet.
-"SKIN_CMD": chat command to change the chatter's skin.
-"SKINS_CMD": alias for the skin command; prints available skins when not given an argument.
-"LURK_CMD": chat command to remove chatter from fight pit.
-"CONNECT_EMOTE": emote used in connect message.
-"FIGHT_EMOTE_1": first emote used in connect message.
-"FIGHT_EMOTE_2": second emote used in connect message.
-"ATTACK_EMOTE": emote used in attack message.
-"DEFEND_EMOTE": emote used in defend message.
-"HEAL_EMOTE": emote used in heal message.
-"PET_EMOTE": emote used in pet message.
-"FAINT_EMOTE": emote used in faint message.
-"NOT_FOUND_EMOTE": emote used when targeted chatter is not found.
-"SKIN_UPDATE_EMOTE": emote used when a chatter's skin is updated.
-"FIGHT_PIT_NAME": Name of the fight pit used in the info command.
-```
-
-### skin_overrides.json
-
-```
-Entries of:
-"twitch_handle": "skin_path"
-For example:
-{
-  "aeomech": "skins/special/my_cool_skin",
-  "zingochris": "skins/special/awesome_skin"
-}
-```
-
 ## Skins
 
 Each skin gets a folder in either `skins/random` or `skins/special`. The folder name is the skin name.
@@ -145,3 +71,78 @@ faint_24_false_0.png
 Within the spritesheet, your animation frames must be square; the number of frames in the animation is determined by how many multiples of the height the width is. That is to say, a 512x128 spritesheet will be determined to be four 128x128 frames.
 
 Spritesheets do not need to be all the same size; for example `idle_12_true_0.png` can have 128x128 frames while `attack_12_false_0.png` can have 512x512 frames. The anchor point for each animation frame is the center of the frame, and the floor is assumed to be `SPRITE_MID_HEIGHT` (default: 64) pixels below the center of the frame.
+
+## Config
+
+### settings.json
+
+**All items except for `TWITCH_APP_ID`, `TWITCH_APP_SECRET`, and `TWITCH_CHANNEL` are optional.**
+
+Reference `settings.py` for default values. Reference [this](https://www.w3schools.com/js/js_json_datatypes.asp) for JSON types. "List" and "array" are used interchangeably below.
+
+- `"TWITCH_APP_ID"` Get from dev.twitch.tv.
+- `"TWITCH_APP_SECRET"` Get from dev.twitch.tv.
+- `"TWITCH_CHANNEL"` Set to desired channel.
+- `"BACKGROUND_COLOR"` List of three colors 0-255 representing red, green, and blue for the background color.
+- `"RENDERING_TIMEOUT_SECONDS"` If set, the app window will go blank if no one sends any recognized commands for this length of time.
+- `"CHATTER_INACTIVITY_TIMEOUT"` If set, the chatter will be removed from the fight pit if they haven't chatted for this length of time.
+- `"COMMAND_TIMEOUT_SECONDS"` If any chatter has sent a recognized command less than this length of time ago the subsequent command will be ignored.
+- `"COMMAND_TIMEOUT_PER_USER"` If a chatter has sent a recognized command less than this length of time ago the subsequent command from this chatter will be ignored.
+- `"SCREEN_WIDTH"` Horizontal size in pixels of game window.
+- `"SCREEN_HEIGHT"` Vertical size in pixels of game window.
+- `"DEBUG"` Enables debug routines.
+- `"DEBUG_CHARACTERS"` Adds test chatters for testing commands on. (`"DEBUG"` must be true).
+- `"IGNORE_LIST"` List of lowercase twitch handles to ignore.
+- `"FLOOR_HEIGHT"` Position in pixels from the top of the window for the floor. If not defined, it is set to the vertical center of the game window.
+- `"SPRITE_MID_HEIGHT"` The center of the sprite will be this amount of pixels above the floor.
+- `"SPRITE_SPACING"` Chatters will be this distance in pixels apart when interacting with each other.
+- `"MOVE_CHANCE"` Every frame while the chatter is standing still idling there is a 1 in MOVE_CHANCE chance they will start moving again.
+- `"WALK_SPEED"` Speed in pixels per second that chatters walk at.
+- `"RUN_SPEED"` Speed in pixels per second that chatters run at when approaching for an interaction.
+- `"MOVE_EPSILON"` Distance from the target a chatter can be to have "arrived". May need to be increased for very high walk or run speeds.
+- `"FRAMERATE"` Target frames per second for the app. 60 or a multiple of it is recommended.
+- `"DEFAULT_HEALTH"` Starting health of chatters.
+- `"DAMAGE_RANGE"` List of two numbers that defined the possible range of damage done with an attack.
+- `"HEALING_RANGE"` List of two numbers that defined the possible range of health points done with a healing.
+- `"COUNTER_CHANCE"` When attacked there is a 1 in COUNTER_CHANCE chance the chatter attacked will counter.
+- `"NAMETAG_FONT"` Name of system font for nametags.
+- `"NAMETAG_FONT_SIZE"` Font size for nametags.
+- `"NAMETAG_COLOR"` List of three colors 0-255 representing red, green, and blue for the nametag color.
+- `"NAMETAG_ANTIALIAS"` Apply anti-aliasing to nametags.
+- `"NAMETAG_OVERLAP_LIMIT"` How many nametags can stack on top of each other to avoid overlapping.
+- `"MINIMUM_FAINT_TIME"` When a chatter faints, no further interactions will be processed for this time period.
+- `"INFO_CMD"` Chat command giving info about the fight pit bot.
+- `"ATTACK_CMD"` Chat command to attack another chatter.
+- `"ATTACK_PAST_TENSE"` Verbiage for the past tense of an attack.
+- `"HEAL_CMD"` Chat command to heal another chatter.
+- `"HEALED_PAST_TEST"` Verbiage for the past tense of a healing.
+- `"DEFEND_CMD"` Chat command to defend another chatter.
+- `"DEFEND_PAST_TENSE"` Verbiage for the past tense of a defense.
+- `"PET_CMD"` Chat command to pet another chatter.
+- `"PET_PAST_TENSE"` Verbiage for the past tense of a pet.
+- `"SKIN_CMD"` Chat command to change the chatter's skin.
+- `"SKINS_CMD"` Alias for the skin command; prints available skins when not given an argument.
+- `"LURK_CMD"` Chat command to remove chatter from fight pit.
+- `"CONNECT_EMOTE"` Emote used in connect message.
+- `"FIGHT_EMOTE_1"` First emote used in connect message.
+- `"FIGHT_EMOTE_2"` Second emote used in connect message.
+- `"ATTACK_EMOTE"` Emote used in attack message.
+- `"DEFEND_EMOTE"` Emote used in defend message.
+- `"HEAL_EMOTE"` Emote used in heal message.
+- `"PET_EMOTE"` Emote used in pet message.
+- `"FAINT_EMOTE"` Emote used in faint message.
+- `"NOT_FOUND_EMOTE"` Emote used when targeted chatter is not found.
+- `"SKIN_UPDATE_EMOTE"` Emote used when a chatter's skin is updated.
+- `"FIGHT_PIT_NAME"` Name of the fight pit used in the info command.
+
+### skin_overrides.json
+
+Entries of: `"twitch_handle": "skin_path"`
+
+For example:
+```
+{
+  "aeomech": "skins/special/my_cool_skin",
+  "zingochris": "skins/special/awesome_skin"
+}
+```
