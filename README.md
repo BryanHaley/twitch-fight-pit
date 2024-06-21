@@ -1,4 +1,6 @@
-# The Zingo Fight Pit
+# Twitch Fight Pit
+
+Twitch overlay app allowing chatters to battle each other via chat commands.
 
 ## Usage
 
