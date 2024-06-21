@@ -4,9 +4,13 @@ Twitch overlay app allowing chatters to battle each other via chat commands.
 
 ## Usage
 
-In `settings.json` specify `TWITCH_APP_ID` and `TWITCH_APP_SECRET`. Get these from registering an application on dev.twitch.tv. Set `TWITCH_CHANNEL` to the channel you want to run the bot in.
+In `settings.json` specify `TWITCH_APP_ID` and `TWITCH_APP_SECRET`. Get these from [registering an application on dev.twitch.tv](https://dev.twitch.tv/docs/authentication/register-app/).
 
-Ensure the executable has permissions to write to the folder it is located in. (The easiest way to do this is to place somewhere in your C:\Users\\<username\> directory).
+In the application settings on dev.twitch.tv the redirect url must be set to `http://localhost:17563`.
+
+Set `TWITCH_CHANNEL` to the channel you want to run the bot in.
+
+Ensure the executable has permissions to write to the folder it is located in. (The easiest way to do this is to place somewhere in your `C:\Users\<username>` directory).
 
 Run `fight-pit.exe` on Windows, or on any platform `pip install -r requirements.txt` and `python fight-pit.py`
 
@@ -14,13 +18,14 @@ Add a window capture in OBS for the app.
 
 Chatters can then send the following commands (customizable):
 ```
-!attack : Attack another chatter
+!fight  : Get info about the fight pit.
+!attack : Attack another chatter.
 !defend : Give another chatter a shield that will reduce the next attack's damage by 50%.
-!heal   : Heal another chatter
-!pet    : Pet another chatter
-!skin   : Change chatter's skin to an available skin
-!skins  : List available skins
-!lurk   : Remove chatter from fight pit
+!heal   : Heal another chatter.
+!pet    : Pet another chatter.
+!skin   : Change chatter's skin to an available skin.
+!skins  : List available skins.
+!lurk   : Remove chatter from fight pit.
 ```
 
 ## Skins
