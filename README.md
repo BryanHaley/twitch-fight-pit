@@ -156,7 +156,7 @@ For example:
 
 [Skeleton character by Calciumtrice under the Creative Commons Attribution 3.0 license.](https://opengameart.org/content/animated-skeleton)
 
-Temporary "default" character cc ZingoChris
+Temporary "default" character cc ZingoChris (to be replaced)
 
 ## License
 
