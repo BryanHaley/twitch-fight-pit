@@ -37,6 +37,7 @@ Chatters can then send the following commands:
 "SCREEN_WIDTH": Horizontal size in pixels of game window.
 "SCREEN_HEIGHT": Vertical size in pixels of game window.
 "DEBUG": Enables debug routines.
+"DEBUG_CHARACTERS": Adds test chatters for testing commands on. ("DEBUG" must be true).
 "IGNORE_LIST": List of lowercase twitch handles to ignore.
 "FLOOR_HEIGHT": Position in pixels from the top of the window for the floor. If not defined, it is set to the vertical center of the game window.
 "SPRITE_MID_HEIGHT": The center of the sprite will be this amount of pixels above the floor.

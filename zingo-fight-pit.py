@@ -44,7 +44,8 @@ if __name__ == "__main__":
 
     # Add a chatter to test with if needed
     if Settings.debug:
-        TwitchInterface.add_chatter("testma")
+        for i in range(Settings.debug_characters):
+            TwitchInterface.add_chatter("testma" + (str(i) if i > 0 else ""))
     TwitchInterface.add_chatter(TwitchInterface.get_target_channel())
 
     # Start twitch handling thread
@@ -97,19 +98,41 @@ if __name__ == "__main__":
                 # Set flipped status of the animator using the actor's flipped status
                 actor["animator"].set_flipped(actor["actor"].get_flipped())
                 # Blit actor onto screen if the timeout hasn't elapsed
-                if not Settings.rendering_timeout or time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout:
-                    if GameInterface.is_actor_defended(actor_name):
+                if not actor["puppet"]:
+                    if (not Settings.rendering_timeout or 
+                        time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout):
+                        if GameInterface.is_actor_defended(actor_name):
+                            screen.blit(
+                                bubble_img, 
+                                (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
+                                bubble_img.get_rect()
+                            )
                         screen.blit(
-                            bubble_img, 
-                            (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
-                            bubble_img.get_rect()
+                            pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
+                            (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
+                            actor["animator"].get_crop_square()
                         )
-                    screen.blit(
-                        pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
-                        (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
-                        actor["animator"].get_crop_square()
-                    )
-                    actor["nametag"].blit(screen, GameInterface.get_actors())
+                        actor["nametag"].blit(screen, GameInterface.get_actors())
+            # Draw the puppeted actors on top
+            for actor in GameInterface.get_actors():
+                actor_name = actor
+                actor = GameInterface.get_actors()[actor]
+                # Blit actor onto screen if the timeout hasn't elapsed
+                if actor["puppet"]:
+                    if (not Settings.rendering_timeout or 
+                        time.time() < TwitchInterface.get_last_command_time() + Settings.rendering_timeout):
+                        if GameInterface.is_actor_defended(actor_name):
+                            screen.blit(
+                                bubble_img, 
+                                (actor["actor"].get_x()-bubble_img.get_rect().width/2, actor["actor"].get_y()-bubble_img.get_rect().height/2), 
+                                bubble_img.get_rect()
+                            )
+                        screen.blit(
+                            pygame.transform.flip(actor["animator"].get_img(), actor["animator"].get_flipped(), False), 
+                            (actor["actor"].get_x()-actor["animator"].get_half_size(), actor["actor"].get_y()-actor["animator"].get_half_size()), 
+                            actor["animator"].get_crop_square()
+                        )
+                        actor["nametag"].blit(screen, GameInterface.get_actors())
 
             # Flip buffers
             pygame.display.flip()

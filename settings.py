@@ -17,6 +17,7 @@ class _Settings:
             "SCREEN_WIDTH": 800,
             "SCREEN_HEIGHT": 600,
             "DEBUG": False,
+            "DEBUG_CHARACTERS": 0,
             "IGNORE_LIST": ["nightbot", "streamelements", "streamlabs", "moobot"],
             "FLOOR_HEIGHT": None,
             "SPRITE_MID_HEIGHT": 64,
@@ -84,6 +85,7 @@ class _Settings:
 
         # Misc
         self.debug = self._settings_json["DEBUG"]
+        self.debug_characters = max(0, self._settings_json["DEBUG_CHARACTERS"])
         self.ignore_list = self._settings_json["IGNORE_LIST"]
         self.move_chance = self._settings_json["MOVE_CHANCE"]
         self.sprite_spacing = self._settings_json["SPRITE_SPACING"]
