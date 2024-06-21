@@ -24,8 +24,8 @@ class _TwitchInterface:
                 "last_command_time": 0,
                 "health": self._chatter_default_health
             }
+            self.set_chatter_last_command_time(name)
         self.set_chatter_last_chat_time(name)
-        self.set_chatter_last_command_time(name)
         GameInterface.add_actor(name, random.randint(100,700))
     
     def update_last_command_time(self):

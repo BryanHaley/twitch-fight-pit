@@ -238,6 +238,7 @@ async def skin_command(cmd: ChatCommand):
                 "metadata": None
             })
         await cmd.reply(f'Updating skin for {commander} to {skin} zingocSmile')
+        TwitchInterface.set_chatter_last_command_time(commander)
         return "SUCCESS"
     except:
         print("Unknown error occurred handling skin command")
