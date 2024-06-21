@@ -12,9 +12,9 @@ Run `zingo-fight-pit.exe` on Windows, or on any platform `pip install -r require
 
 Add a window capture in OBS for the app.
 
-Chatters can then send the following commands:
+Chatters can then send the following commands (customizable):
 ```
-!squash : Attack another chatter
+!attack : Attack another chatter
 !defend : Give another chatter a shield that will reduce the next attack's damage by 50%.
 !heal   : Heal another chatter
 !pet    : Pet another chatter
