@@ -3,6 +3,7 @@ import time
 import threading
 import pygame
 from settings import Settings
+from game_interface import GameInterface
 
 class Director:
     """
@@ -44,6 +45,8 @@ class Director:
                         self.direct_defend_interaction(command)
                     elif command["action"] == "faint":
                         self.direct_faint_interaction(command)
+                    elif command["action"] == "update_skin":
+                        self.direct_update_skin(command)
                     else:
                         print("Unrecognized command. Ignoring: {}: {}".format(command["action"], command))
                 except:
@@ -148,8 +151,15 @@ class Director:
         actor1_animator.set_animation("idle")
         self.unpuppet_actor(command["actor"])
         return "SUCCESS"
-        
-        
+    
+    def direct_update_skin(self, command):
+        actor = self._actors[command["actor"]]["actor"]
+        result = GameInterface.change_actor_skin(command["actor"])
+        if result == "FAILURE":
+            return "FAILURE"
+        actor_animator = self._actors[command["actor"]]["animator"]
+        actor_animator.set_animation("idle")
+        return "SUCCESS"
 
 if __name__ == "__main__":
     import pygame

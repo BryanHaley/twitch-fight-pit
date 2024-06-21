@@ -3,6 +3,7 @@ __pycache__/
 build/
 dist/
 settings.json
+skin_overrides.json
 *.spec
 .DS_Store
 ._*

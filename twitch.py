@@ -4,6 +4,7 @@ import traceback
 from twitch_interface import TwitchInterface
 from game_interface import GameInterface
 from settings import Settings
+from skins import SkinOverrides
 from twitchAPI.twitch import Twitch
 from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.type import AuthScope, ChatEvent
@@ -167,6 +168,39 @@ async def defend_command(cmd: ChatCommand):
     GameInterface.defend_actor(chatter)
     return "SUCCESS"
 
+# Callback for the skin command
+async def skin_command(cmd: ChatCommand):
+    # Get parameters
+    commander = str(cmd.user.name).lower()
+    skin = str(cmd.parameter).lower()
+    # Add the commander chatter if he isn't there already
+    TwitchInterface.add_chatter(commander)
+    # Ignore command if commander is in ignore list or has recently sent a command
+    if (commander in TwitchInterface.get_ignore_list() or
+        time.time() < TwitchInterface.get_chatter_metadata()[commander]["last_command_time"]+Settings.command_timeout_per_user):
+        print(f'{commander} is in ignore list or trying to send commands too quickly')
+        return "FAILURE"
+    # Ignore command if last command in general was too recent
+    if time.time() < TwitchInterface.get_last_command_time()+Settings.command_timeout:
+        print("Chatters are trying to send commands too quickly; ignoring")
+        return "FAILURE"
+    # Ignore zero length parameters
+    # TODO: print available skins when this is called
+    if len(cmd.parameter) < 1:
+        return "FAILURE"
+    # Set skin override
+    result = SkinOverrides.set_override(commander, skin)
+    if result == "FAILURE":
+        await cmd.reply(f'Selecting skin {skin} failed. Did you spell it correctly?')
+        return "FAILURE"
+    GameInterface.enqueue_command({
+            "action": "update_skin",
+            "actor": commander,
+            "metadata": None
+        })
+    await cmd.reply(f'Updating skin for {commander} to {skin} zingocSmile')
+    return "SUCCESS"
+
 
 # this is where we set up the bot
 async def run_twitch_handler():
@@ -189,6 +223,7 @@ async def run_twitch_handler():
     chat.register_command('defend', defend_command)
     chat.register_command('heal', heal_command)
     chat.register_command('pet', pet_command)
+    chat.register_command('skin', skin_command)
 
     # Start chat connection
     chat.start()

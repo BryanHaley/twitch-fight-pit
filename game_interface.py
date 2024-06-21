@@ -3,6 +3,7 @@ import random
 from actor import Actor, Animator
 from settings import Settings
 from nametag import Nametag
+from skins import SkinOverrides
 
 class _GameInterface:
     def __init__(self):
@@ -15,18 +16,27 @@ class _GameInterface:
             # Create actor
             actor = Actor(x, Settings.sprite_elevation)
             # Determine skin to use
-            path = os.path.join("skins", "special", name)
-            if os.path.exists(path):
-                animator = Animator(path)
+            animator = None
+            override = SkinOverrides.get_override_for_name(name)
+            if override:
+                animator = Animator(override)
             else:
-                # Pick a random skin to use
-                random_skins_path = os.path.join("skins", "random")
-                skins = list(filter(lambda x: not os.path.isfile(x), os.listdir(random_skins_path)))
-                skin = random.choice(skins)
-                skin_path = os.path.join("skins", "random", skin)
-                animator = Animator(skin_path)
-            
+                path = os.path.join("skins", "special", name)
+                if os.path.exists(path):
+                    animator = Animator(path)
+                else:
+                    # Pick a random skin to use
+                    random_skins_path = os.path.join("skins", "random")
+                    skins = list(filter(lambda x: not os.path.isfile(x), os.listdir(random_skins_path)))
+                    skin = random.choice(skins)
+                    skin_path = os.path.join("skins", "random", skin)
+                    animator = Animator(skin_path)
+            # Sanity check
+            if not animator:
+                print("WARNING: Failed to select skin for {}".format(name))
+            # Set animation
             animator.set_animation("idle")
+            # Create actor
             self._actors[name] = {
                 "actor": actor,
                 "animator": animator,
@@ -34,6 +44,17 @@ class _GameInterface:
                 "defended": False,
                 "nametag": Nametag(name)
             }
+    
+    def change_actor_skin(self, name):
+        if not name in self._actors:
+            return "FAILURE"
+        # Determine skin to use
+        skin = SkinOverrides.get_override_for_name(name)
+        if skin:
+            animator = Animator(skin)
+            self._actors[name]["animator"] = animator
+            return "SUCCESS"
+        return "FAILURE"
 
     def defend_actor(self, name):
         if name in self._actors:
