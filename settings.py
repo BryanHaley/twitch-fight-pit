@@ -36,6 +36,7 @@ class _Settings:
             "NAMETAG_COLOR": [0,0,0],
             "NAMETAG_ANTIALIAS": True,
             "NAMETAG_OVERLAP_LIMIT": 5,
+            "MINIMUM_FAINT_TIME": 5.0,
             "INFO_CMD": "fight",
             "ATTACK_CMD": "attack",
             "ATTACK_PAST_TENSE": "attacked",
@@ -109,6 +110,7 @@ class _Settings:
         # Misc
         self.debug = self._settings_json["DEBUG"]
         self.debug_characters = max(0, self._settings_json["DEBUG_CHARACTERS"])
+        self.minimum_faint_time = max(1.0, self._settings_json["MINIMUM_FAINT_TIME"])
         self.ignore_list = self._settings_json["IGNORE_LIST"]
         self.move_chance = self._settings_json["MOVE_CHANCE"]
         self.sprite_spacing = self._settings_json["SPRITE_SPACING"]

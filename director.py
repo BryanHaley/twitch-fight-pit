@@ -185,16 +185,16 @@ class Director:
         elif "faint" in actor1_animator.get_animations():
             anim = "faint"
         actor1.set_goal(None)
-        anim_thread = threading.Thread(target=self.play_animation_non_blocking, args=[command["actor"], actor1_animator, anim, True])
-        anim_thread.start()
+        actor1_animator.set_animation(anim)
+        self.unpuppet_actor(command["actor"])
         # Don't process any more commands for another few seconds
         deltatimer = 0
-        while deltatimer < 5.0:
+        while deltatimer < Settings.minimum_faint_time:
             self._clock.tick(Settings.framerate)
             deltatimer += self._clock.get_time() * 0.001
         return "SUCCESS"
     
-    async def play_animation_non_blocking(self, actor, animator, anim, puppet):
+    def play_animation(self, actor, animator, anim, puppet):
         if puppet:
             self.puppet_actor(actor)
         animator.set_animation(anim)

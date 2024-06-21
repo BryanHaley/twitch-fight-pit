@@ -27,6 +27,7 @@ Chatters can then send the following commands (customizable):
 
 ### settings.json
 
+Reference `settings.py` for default values.
 ```
 "TWITCH_APP_ID": Get from dev.twitch.tv.
 "TWITCH_APP_SECRET": Get from dev.twitch.tv.
@@ -58,6 +59,7 @@ Chatters can then send the following commands (customizable):
 "NAMETAG_COLOR": List of three colors 0-255 representing red, green, and blue for the nametag color.
 "NAMETAG_ANTIALIAS": Apply anti-aliasing to nametags.
 "NAMETAG_OVERLAP_LIMIT": How many nametags can stack on top of each other to avoid overlapping.
+"MINIMUM_FAINT_TIME": When a chatter faints, no further interactions will be processed for this time period.
 "INFO_CMD": chat command giving info about the fight pit bot.
 "ATTACK_CMD": chat command to attack another chatter.
 "ATTACK_PAST_TENSE": verbiage for the past tense of an attack.
