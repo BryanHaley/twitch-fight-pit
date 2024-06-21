@@ -97,7 +97,7 @@ class Animation:
         self._timer += deltatime
         if self._timer > self._framerate*(self._current_frame+1):
             self._current_frame += 1
-        return "SUCCESS" if self._current_frame == self._frames else "RUNNING"
+        return "SUCCESS" if self._current_frame == self._frames and self._timer > self._framerate*(self._current_frame+1) else "RUNNING"
     
     def reset(self):
         self._timer = 0
@@ -195,6 +195,9 @@ class Animator:
         self._current_animation_name = name
         if reset:
             self._current_animation.reset()
+    
+    def get_animations(self):
+        return list(self._animations.keys())
     
     def get_animation(self):
         return self._current_animation

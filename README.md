@@ -117,7 +117,8 @@ heal
 get-healed
 pet
 get-pet
-faint
+fainting (optional)
+faint or fainted
 walk
 run
 idle

@@ -1,5 +1,4 @@
 import traceback
-import time
 import threading
 import pygame
 from settings import Settings
@@ -37,13 +36,14 @@ class Director:
                     # Search the queue for an action where the actors aren't fainted
                     command = None
                     for i, command in enumerate(self._command_queue):
-                        if not self.actors_are_fainted(command):
+                        if not self.actors_are_fainted_or_puppeted(command):
                             command = self._command_queue.pop(i)
                             break
                     if not command:
                         self._clock.tick(Settings.framerate)
                         continue
                     # Handle the command based on the action
+                    print("Processing command: {}".format(command))
                     if command["action"] == Settings.pet_cmd:
                         self.direct_pet_interaction(command)
                     elif command["action"] == Settings.attack_cmd:
@@ -135,18 +135,21 @@ class Director:
         self.unpuppet_actor(command["actor2"])
         return "SUCCESS"
     
-    def actors_are_fainted(self, command):
+    def actors_are_fainted_or_puppeted(self, command):
         if "actor" in command:
             animator = self._actors[command["actor"]]["animator"]
-            if animator.get_animation_name().startswith("faint"):
+            if (animator.get_animation_name().startswith("faint") or
+                self._actors[command["actor"]]["puppet"]):
                 return True
         if "actor1" in command:
             animator = self._actors[command["actor1"]]["animator"]
-            if animator.get_animation_name().startswith("faint"):
+            if (animator.get_animation_name().startswith("faint") or
+                self._actors[command["actor1"]]["puppet"]):
                 return True
         if "actor2" in command:
             animator = self._actors[command["actor2"]]["animator"]
-            if animator.get_animation_name().startswith("faint"):
+            if (animator.get_animation_name().startswith("faint") or
+                self._actors[command["actor2"]]["puppet"]):
                 return True
         return False
 
@@ -167,9 +170,38 @@ class Director:
         self.puppet_actor(command["actor"])
         actor1 = self._actors[command["actor"]]["actor"]
         actor1_animator = self._actors[command["actor"]]["animator"]
-        actor1_animator.set_animation("faint")
+        # Play the fainting animation if available
+        if "fainting" in actor1_animator.get_animations():
+            deltatime = 0
+            fainting_status = "RUNNING"
+            actor1_animator.set_animation("fainting")
+            while fainting_status == "RUNNING":
+                fainting_status = actor1_animator.play(deltatime)
+                self._clock.tick(Settings.framerate)
+                deltatime = self._clock.get_time() * 0.001
+        # Play the fainted or faint animation and don't wait for exit
+        if "fainted" in actor1_animator.get_animations():
+            anim = "fainted"
+        elif "faint" in actor1_animator.get_animations():
+            anim = "faint"
         actor1.set_goal(None)
-        self.unpuppet_actor(command["actor"])
+        anim_thread = threading.Thread(target=self.play_animation_non_blocking, args=[command["actor"], actor1_animator, anim, True])
+        anim_thread.start()
+        return "SUCCESS"
+    
+    async def play_animation_non_blocking(self, actor, animator, anim, puppet):
+        if puppet:
+            self.puppet_actor(actor)
+        animator.set_animation(anim)
+        deltatime = 0
+        faint_status = "RUNNING"
+        animator.set_animation(anim)
+        while faint_status == "RUNNING" and not self._quit:
+            faint_status = animator.play(deltatime)
+            self._clock.tick(Settings.framerate)
+            deltatime = self._clock.get_time() * 0.001
+        if puppet:
+            self.unpuppet_actor(actor)
         return "SUCCESS"
     
     def direct_update_skin(self, command):
