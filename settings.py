@@ -35,7 +35,29 @@ class _Settings:
             "NAMETAG_FONT_SIZE": 16,
             "NAMETAG_COLOR": [0,0,0],
             "NAMETAG_ANTIALIAS": True,
-            "NAMETAG_OVERLAP_LIMIT": 5
+            "NAMETAG_OVERLAP_LIMIT": 5,
+            "INFO_CMD": "fight",
+            "ATTACK_CMD": "squash",
+            "ATTACK_PAST_TENSE": "squashed",
+            "HEAL_CMD": "heal",
+            "HEALED_PAST_TEST": "healed",
+            "DEFEND_CMD": "defend",
+            "DEFEND_PAST_TENSE": "defended",
+            "PET_CMD": "pet",
+            "PET_PAST_TENSE": "pet",
+            "SKIN_CMD": "skin",
+            "SKINS_CMD": "skins",
+            "LURK_CMD": "lurk",
+            "CONNECT_EMOTE": "🤝",
+            "FIGHT_EMOTE_1": "🤜",
+            "FIGHT_EMOTE_2": "🤛",
+            "ATTACK_EMOTE": "👊",
+            "DEFEND_EMOTE": "🛡️",
+            "HEAL_EMOTE": "❤️‍🩹",
+            "PET_EMOTE": "🫂",
+            "FAINT_EMOTE": "😵",
+            "NOT_FOUND_EMOTE": "😖",
+            "FIGHT_PIT_NAME": "fight pit"
         }
     
     def init_from_file(self, filepath):
@@ -108,5 +130,29 @@ class _Settings:
         )
         self.nametag_antialias = self._settings_json["NAMETAG_ANTIALIAS"]
         self.nametag_overlap_limit = max(1, self._settings_json["NAMETAG_OVERLAP_LIMIT"])
+
+        # Commands
+        self.info_cmd = self._settings_json["INFO_CMD"]
+        self.attack_cmd = self._settings_json["ATTACK_CMD"]
+        self.attack_past_tense = self._settings_json["ATTACK_PAST_TENSE"]
+        self.heal_cmd = self._settings_json["HEAL_CMD"]
+        self.healed_past_tense = self._settings_json["HEALED_PAST_TEST"]
+        self.defend_cmd = self._settings_json["DEFEND_CMD"]
+        self.defend_past_tense = self._settings_json["DEFEND_PAST_TENSE"]
+        self.pet_cmd = self._settings_json["PET_CMD"]
+        self.pet_past_tense = self._settings_json["PET_PAST_TENSE"]
+        self.skin_cmd = self._settings_json["SKIN_CMD"]
+        self.skins_cmd = self._settings_json["SKINS_CMD"]
+        self.lurk_cmd = self._settings_json["LURK_CMD"]
+        self.connect_emote = self._settings_json["CONNECT_EMOTE"]
+        self.fight_emote_1 = self._settings_json["FIGHT_EMOTE_1"]
+        self.fight_emote_2 = self._settings_json["FIGHT_EMOTE_2"]
+        self.attack_emote = self._settings_json["ATTACK_EMOTE"]
+        self.defend_emote = self._settings_json["DEFEND_EMOTE"]
+        self.heal_emote = self._settings_json["HEAL_EMOTE"]
+        self.pet_emote = self._settings_json["PET_EMOTE"]
+        self.faint_emote = self._settings_json["FAINT_EMOTE"]
+        self.not_found_emote = self._settings_json["NOT_FOUND_EMOTE"]
+        self.fight_pit_name = self._settings_json["FIGHT_PIT_NAME"]
 
 Settings = _Settings()

@@ -31,7 +31,7 @@ async def on_ready(ready_event: EventData):
     try:
         print('Bot is ready for work; joining channel {}'.format(TwitchInterface.get_target_channel()))
         await ready_event.chat.join_room(TwitchInterface.get_target_channel())
-        await ready_event.chat.send_message(TwitchInterface.get_target_channel(), "Fight pit bot has connected to chat 👊")
+        await ready_event.chat.send_message(TwitchInterface.get_target_channel(), f'Fight pit bot has connected to chat {Settings.connect_emote}')
     except:
         print(traceback.format_exc())
 
@@ -64,7 +64,7 @@ async def handle_command(cmd, commander, chatter, action, action_past_tense, emo
 
         # Non-commanding user must already be in chatters for this to work
         if chatter not in TwitchInterface.get_chatter_metadata():
-            await cmd.reply(f'{commander} tried to {action} {chatter}, but they were nowhere to be found! zingocConfused zingocConfused zingocConfused')
+            await cmd.reply(f'{commander} tried to {action} {chatter}, but they were nowhere to be found! {Settings.not_found_emote}')
             return "FAILURE"
         
         # Queue the command
@@ -97,7 +97,7 @@ async def pet_command(cmd: ChatCommand):
         commander = str(cmd.user.name).lower()
         chatter = str(cmd.parameter).lower()
         # Handle command
-        await handle_command(cmd, commander, chatter, "pet", "pet", "Petthezingo")
+        await handle_command(cmd, commander, chatter, Settings.pet_cmd, Settings.pet_past_tense, Settings.pet_emote)
     except:
         print("Unknown error occurred handling pet command")
         print(traceback.format_exc())
@@ -113,7 +113,7 @@ async def attack_command(cmd: ChatCommand):
         commander = str(cmd.user.name).lower()
         chatter = str(cmd.parameter).lower()
         # Handle command
-        result = await handle_command(cmd, commander, chatter, "squash", "squashed", "zingo37Foot", False)
+        result = await handle_command(cmd, commander, chatter, Settings.attack_cmd, Settings.attack_past_tense, Settings.attack_emote, False)
         if result != "SUCCESS":
             return "FAILURE"
         # Determine damage and counter
@@ -136,7 +136,7 @@ async def attack_command(cmd: ChatCommand):
         # If countering, queue that up
         if counter:
             GameInterface.enqueue_command({
-                "action": "squash",
+                "action": Settings.attack_cmd,
                 "actor1": chatter,
                 "actor2": commander,
                 "metadata": None
@@ -151,14 +151,14 @@ async def attack_command(cmd: ChatCommand):
                     "metadata": None
                 })
         # Build message
-        msg = f'{commander} squashed {chatter} for {damage} damage!'
+        msg = f'{commander} {Settings.attack_past_tense} {chatter} for {damage} damage!'
         if counter:
             msg += f' {chatter} counters for {counter_damage} damage!'
-        msg += ' zingo37Foot zingo37Foot zingo37Foot'
+        msg += f' {Settings.attack_emote}'
         if chatter_status == "FAINTED":
-            msg += f' {chatter} fainted! zingocSad'
+            msg += f' {chatter} fainted! {Settings.faint_emote}'
         if commander_status == "FAINTED":
-            msg += f' {commander} fainted! zingocSad'
+            msg += f' {commander} fainted! {Settings.faint_emote}'
         # Send message
         await cmd.reply(msg)
         return "SUCCESS"
@@ -177,12 +177,12 @@ async def heal_command(cmd: ChatCommand):
         commander = str(cmd.user.name).lower()
         chatter = str(cmd.parameter).lower()
         # Handle command
-        await handle_command(cmd, commander, chatter, "heal", "healed", "zingoW", False)
+        await handle_command(cmd, commander, chatter, Settings.heal_cmd, Settings.healed_past_tense, Settings.heal_emote, False)
         # Calculate and apply healing value
         healing = random.randint(Settings.healing_range_min, Settings.healing_range_max)
         new_health = TwitchInterface.heal_chatter(chatter, healing)
         # Send reply
-        await cmd.reply(f'{commander} healed {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! zingoW')
+        await cmd.reply(f'{commander} {Settings.healed_past_tense} {chatter} for {healing} HP! They now have {new_health}/{Settings.default_health} HP! {Settings.heal_emote}')
         return "SUCCESS"
     except:
         print("Unknown error occurred handling heal command")
@@ -199,7 +199,7 @@ async def defend_command(cmd: ChatCommand):
         commander = str(cmd.user.name).lower()
         chatter = str(cmd.parameter).lower()
         # Handle command
-        await handle_command(cmd, commander, chatter, "defend", "defended", "zingocCool")
+        await handle_command(cmd, commander, chatter, Settings.defend_cmd, Settings.defend_past_tense, Settings.defend_emote)
         # Set defended status on chatter
         # GameInterface.defend_actor(chatter) # Set this during animation instead
         return "SUCCESS"
@@ -262,6 +262,24 @@ async def lurk_command(cmd: ChatCommand):
         print(traceback.format_exc())
         return "FAILURE"
 
+# Callback for the info command
+async def info_command(cmd: ChatCommand):
+    try:
+        await cmd.reply(f'{Settings.fight_emote_1} {Settings.fight_emote_2} ' +
+                        f'Participate in the {Settings.fight_pit_name}! Throw hands with each other using any of these commands: ' +
+                        f'!{Settings.info_cmd}, ' +
+                        f'!{Settings.attack_cmd}, ' +
+                        f'!{Settings.defend_cmd}, ' +
+                        f'!{Settings.heal_cmd}, ' +
+                        f'!{Settings.pet_cmd}, ' +
+                        f'!{Settings.skin_cmd}, ' +
+                        f'!{Settings.skins_cmd}, ' +
+                        f'!{Settings.lurk_cmd}')
+        return "SUCCESS"
+    except:
+        print("Unknown error occurred handling lurk command")
+        print(traceback.format_exc())
+        return "FAILURE"
 
 # this is where we set up the bot
 async def run_twitch_handler():
@@ -280,13 +298,14 @@ async def run_twitch_handler():
     chat.register_event(ChatEvent.MESSAGE, on_message)
 
     # Register command handlers
-    chat.register_command('squash', attack_command)
-    chat.register_command('defend', defend_command)
-    chat.register_command('heal', heal_command)
-    chat.register_command('pet', pet_command)
-    chat.register_command('skin', skin_command)
-    chat.register_command('skins', skin_command)
-    chat.register_command('lurk', lurk_command)
+    chat.register_command(Settings.attack_cmd, attack_command)
+    chat.register_command(Settings.defend_cmd, defend_command)
+    chat.register_command(Settings.heal_cmd, heal_command)
+    chat.register_command(Settings.pet_cmd, pet_command)
+    chat.register_command(Settings.skin_cmd, skin_command)
+    chat.register_command(Settings.skins_cmd, skin_command)
+    chat.register_command(Settings.lurk_cmd, lurk_command)
+    chat.register_command(Settings.info_cmd, info_command)
 
     # Start chat connection
     chat.start()

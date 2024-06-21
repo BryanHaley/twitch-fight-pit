@@ -56,6 +56,28 @@ Chatters can then send the following commands:
 "NAMETAG_COLOR": List of three colors 0-255 representing red, green, and blue for the nametag color.
 "NAMETAG_ANTIALIAS": Apply anti-aliasing to nametags.
 "NAMETAG_OVERLAP_LIMIT": How many nametags can stack on top of each other to avoid overlapping.
+"INFO_CMD": chat command giving info about the fight pit bot.
+"ATTACK_CMD": chat command to attack another chatter.
+"ATTACK_PAST_TENSE": verbiage for the past tense of an attack.
+"HEAL_CMD": chat command to heal another chatter.
+"HEALED_PAST_TEST": verbiage for the past tense of a healing.
+"DEFEND_CMD": chat command to defend another chatter.
+"DEFEND_PAST_TENSE": verbiage for the past tense of a defense.
+"PET_CMD": chat command to pet another chatter.
+"PET_PAST_TENSE": verbiage for the past tense of a pet.
+"SKIN_CMD": chat command to change the chatter's skin.
+"SKINS_CMD": alias for the skin command; prints available skins when not given an argument.
+"LURK_CMD": chat command to remove chatter from fight pit.
+"CONNECT_EMOTE": emote used in connect message.
+"FIGHT_EMOTE_1": first emote used in connect message.
+"FIGHT_EMOTE_2": second emote used in connect message.
+"ATTACK_EMOTE": emote used in attack message.
+"DEFEND_EMOTE": emote used in defend message.
+"HEAL_EMOTE": emote used in heal message.
+"PET_EMOTE": emote used in pet message.
+"FAINT_EMOTE": emote used in faint message.
+"NOT_FOUND_EMOTE": emote used when targeted chatter is not found.
+"FIGHT_PIT_NAME": Name of the fight pit used in the info command.
 ```
 
 ### skin_overrides.json

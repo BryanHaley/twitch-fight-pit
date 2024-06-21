@@ -35,13 +35,13 @@ class Director:
             if len(self._command_queue) > 0:
                 command = self._command_queue.pop(0)
                 try:
-                    if command["action"] == "pet":
+                    if command["action"] == Settings.pet_cmd:
                         self.direct_pet_interaction(command)
-                    elif command["action"] == "squash":
+                    elif command["action"] == Settings.attack_cmd:
                         self.direct_attack_interaction(command)
-                    elif command["action"] == "heal":
+                    elif command["action"] == Settings.heal_cmd:
                         self.direct_heal_interaction(command)
-                    elif command["action"] == "defend":
+                    elif command["action"] == Settings.defend_cmd:
                         self.direct_defend_interaction(command)
                     elif command["action"] == "faint":
                         self.direct_faint_interaction(command)
@@ -115,9 +115,9 @@ class Director:
         self.make_actors_face_each_other(actor1, actor2)
         # Play animations
         self.play_interaction_animations(actor1_animator, actor2_animator, actor1_anim, actor2_anim)
-        if command["action"] == "squash":
+        if command["action"] == Settings.attack_cmd:
             GameInterface.undefend_actor(command["actor2"])
-        elif command["action"] == "defend":
+        elif command["action"] == Settings.defend_cmd:
             GameInterface.defend_actor(command["actor2"])
         # Return to idle
         actor1_animator.set_animation("idle")
