@@ -10,6 +10,22 @@ from twitchAPI.oauth import UserAuthenticator
 from twitchAPI.type import AuthScope, ChatEvent
 from twitchAPI.chat import Chat, EventData, ChatMessage, ChatSub, ChatCommand
 
+# Keep the available skins message under 500 characters
+def split_skins_message(skins_list):
+    msg_list = []
+    current_msg = "Available skins: "
+    for i, skin in enumerate(skins_list):
+        if len(current_msg) + len(skin) + 2 >= 500:
+            msg_list += [current_msg]
+            current_msg = ""
+        if i < len(skins_list)-1:
+            current_msg += f"{skin}, "
+        else:
+            current_msg += f"{skin}"
+    msg_list += [current_msg]
+    return msg_list
+    
+
 # Callback for the chat connection being ready
 async def on_ready(ready_event: EventData):
     print('Bot is ready for work; joining channel {}'.format(TwitchInterface.get_target_channel()))
@@ -184,10 +200,12 @@ async def skin_command(cmd: ChatCommand):
     if time.time() < TwitchInterface.get_last_command_time()+Settings.command_timeout:
         print("Chatters are trying to send commands too quickly; ignoring")
         return "FAILURE"
-    # Ignore zero length parameters
-    # TODO: print available skins when this is called
+    # Print available skins to chat if a skin wasn't specified
     if len(cmd.parameter) < 1:
-        return "FAILURE"
+        skins_msg = split_skins_message(SkinOverrides.get_available_skins())
+        for msg in skins_msg:
+            await cmd.reply(msg)
+        return "SUCCESS"
     # Set skin override
     result = SkinOverrides.set_override(commander, skin)
     if result == "FAILURE":
@@ -224,6 +242,7 @@ async def run_twitch_handler():
     chat.register_command('heal', heal_command)
     chat.register_command('pet', pet_command)
     chat.register_command('skin', skin_command)
+    chat.register_command('skins', skin_command)
 
     # Start chat connection
     chat.start()

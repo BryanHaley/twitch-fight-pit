@@ -15,6 +15,10 @@ class _SkinOverrides:
             print("WARNING: Failed to load skin overrides from {}".format(path))
             print(traceback.format_exc())
     
+    def get_available_skins(self):
+        random_skins_path = os.path.join("skins", "random")
+        return list(filter(lambda x: not os.path.isfile(x), os.listdir(random_skins_path)))
+    
     def get_override_for_name(self, name):
         if name in self._overrides:
             return self._overrides[name]

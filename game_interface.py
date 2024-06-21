@@ -26,8 +26,7 @@ class _GameInterface:
                     animator = Animator(path)
                 else:
                     # Pick a random skin to use
-                    random_skins_path = os.path.join("skins", "random")
-                    skins = list(filter(lambda x: not os.path.isfile(x), os.listdir(random_skins_path)))
+                    skins = SkinOverrides.get_available_skins()
                     skin = random.choice(skins)
                     skin_path = os.path.join("skins", "random", skin)
                     animator = Animator(skin_path)
