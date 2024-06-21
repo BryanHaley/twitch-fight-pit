@@ -244,6 +244,19 @@ async def skin_command(cmd: ChatCommand):
         print(traceback.format_exc())
         return "FAILURE"
 
+# Callback for the lurk command
+async def lurk_command(cmd: ChatCommand):
+    try:
+        # Courtesy command to delete a chatter when they lurk
+        commander = str(cmd.user.name).lower()
+        GameInterface.enqueue_delete_actor(commander)
+        TwitchInterface.delete_chatter(commander)
+        return "SUCCESS"
+    except:
+        print("Unknown error occurred handling lurk command")
+        print(traceback.format_exc())
+        return "FAILURE"
+
 
 # this is where we set up the bot
 async def run_twitch_handler():
@@ -268,6 +281,7 @@ async def run_twitch_handler():
     chat.register_command('pet', pet_command)
     chat.register_command('skin', skin_command)
     chat.register_command('skins', skin_command)
+    chat.register_command('lurk', lurk_command)
 
     # Start chat connection
     chat.start()
