@@ -8,7 +8,7 @@ In `settings.json` specify `TWITCH_APP_ID` and `TWITCH_APP_SECRET`. Get these fr
 
 Ensure the executable has permissions to write to the folder it is located in. (The easiest way to do this is to place somewhere in your C:\Users\\<username\> directory).
 
-Run `zingo-fight-pit.exe` on Windows, or on any platform `pip install -r requirements.txt` and `python zingo-fight-pit.py`
+Run `fight-pit.exe` on Windows, or on any platform `pip install -r requirements.txt` and `python fight-pit.py`
 
 Add a window capture in OBS for the app.
 
@@ -79,6 +79,7 @@ Chatters can then send the following commands (customizable):
 "PET_EMOTE": emote used in pet message.
 "FAINT_EMOTE": emote used in faint message.
 "NOT_FOUND_EMOTE": emote used when targeted chatter is not found.
+"SKIN_UPDATE_EMOTE": emote used when a chatter's skin is updated.
 "FIGHT_PIT_NAME": Name of the fight pit used in the info command.
 ```
 

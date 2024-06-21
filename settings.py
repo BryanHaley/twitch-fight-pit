@@ -57,6 +57,7 @@ class _Settings:
             "PET_EMOTE": "🫂",
             "FAINT_EMOTE": "😵",
             "NOT_FOUND_EMOTE": "😖",
+            "SKIN_UPDATE_EMOTE": "👔",
             "FIGHT_PIT_NAME": "fight pit"
         }
     
@@ -153,6 +154,7 @@ class _Settings:
         self.pet_emote = self._settings_json["PET_EMOTE"]
         self.faint_emote = self._settings_json["FAINT_EMOTE"]
         self.not_found_emote = self._settings_json["NOT_FOUND_EMOTE"]
+        self.skin_update_emote = self._settings_json["SKIN_UPDATE_EMOTE"]
         self.fight_pit_name = self._settings_json["FIGHT_PIT_NAME"]
 
 Settings = _Settings()

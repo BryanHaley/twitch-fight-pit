@@ -18,16 +18,16 @@ jobs:
         run: python -m pip install twitchAPI==4.2.0 pyinstaller==6.8.0 pygame==2.4.0
       - name: Package overlay application
         run: |
-          pyinstaller zingo-fight-pit.py
-          copy "./dist/zingo-fight-pit/zingo-fight-pit.exe" "./zingo-fight-pit.exe"
+          pyinstaller fight-pit.py
+          copy "./dist/fight-pit/fight-pit.exe" "./fight-pit.exe"
           copy "./settings_template.json" "./settings.json"
-          cmd /c 'robocopy "./dist/zingo-fight-pit/_internal" "_internal" /e & exit 0'
+          cmd /c 'robocopy "./dist/fight-pit/_internal" "_internal" /e & exit 0'
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zingo-fight-pit-win
+          name: fight-pit-win
           path: |
-            zingo-fight-pit.exe
+            fight-pit.exe
             _internal
             skins/*
             shield.png

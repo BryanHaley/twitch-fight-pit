@@ -241,7 +241,7 @@ async def skin_command(cmd: ChatCommand):
                 "actor": commander,
                 "metadata": None
             })
-        await cmd.reply(f'Updating skin for {commander} to {skin} zingocSmile')
+        await cmd.reply(f'Updating skin for {commander} to {skin} {Settings.skin_update_emote}')
         TwitchInterface.set_chatter_last_command_time(commander)
         return "SUCCESS"
     except:
