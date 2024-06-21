@@ -33,8 +33,17 @@ class Director:
         while not self._quit:
             # Get command off queue
             if len(self._command_queue) > 0:
-                command = self._command_queue.pop(0)
                 try:
+                    # Search the queue for an action where the actors aren't fainted
+                    command = None
+                    for i, command in enumerate(self._command_queue):
+                        if not self.actors_are_fainted(command):
+                            command = self._command_queue.pop(i)
+                            break
+                    if not command:
+                        self._clock.tick(Settings.framerate)
+                        continue
+                    # Handle the command based on the action
                     if command["action"] == Settings.pet_cmd:
                         self.direct_pet_interaction(command)
                     elif command["action"] == Settings.attack_cmd:
@@ -125,6 +134,21 @@ class Director:
         self.unpuppet_actor(command["actor1"])
         self.unpuppet_actor(command["actor2"])
         return "SUCCESS"
+    
+    def actors_are_fainted(self, command):
+        if "actor" in command:
+            animator = self._actors[command["actor"]]["animator"]
+            if animator.get_animation_name().startswith("faint"):
+                return True
+        if "actor1" in command:
+            animator = self._actors[command["actor1"]]["animator"]
+            if animator.get_animation_name().startswith("faint"):
+                return True
+        if "actor2" in command:
+            animator = self._actors[command["actor2"]]["animator"]
+            if animator.get_animation_name().startswith("faint"):
+                return True
+        return False
 
     def direct_pet_interaction(self, command):
         self.direct_interaction(command, "pet", "get-pet")
@@ -139,20 +163,12 @@ class Director:
         self.direct_interaction(command, "heal", "get-healed")
     
     def direct_faint_interaction(self, command):
-        # Get actors and animators
-        actor1 = self._actors[command["actor"]]["actor"]
+        # Just set the animation
         self.puppet_actor(command["actor"])
+        actor1 = self._actors[command["actor"]]["actor"]
         actor1_animator = self._actors[command["actor"]]["animator"]
-        actor1_anim_playing = "RUNNING"
         actor1_animator.set_animation("faint")
-        # Play animation
-        deltatime = 0
-        while actor1_anim_playing == "RUNNING":
-            actor1_anim_playing = actor1_animator.play(deltatime)
-            self._clock.tick(Settings.framerate)
-            deltatime = self._clock.get_time() * 0.001
-        # Return to idle
-        actor1_animator.set_animation("idle")
+        actor1.set_goal(None)
         self.unpuppet_actor(command["actor"])
         return "SUCCESS"
     

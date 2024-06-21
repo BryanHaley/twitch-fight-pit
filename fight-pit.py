@@ -94,7 +94,10 @@ if __name__ == "__main__":
                 actor = GameInterface.get_actors()[actor]
                 # Animate non-puppeted actors (puppeted actors get animated by the director)
                 if not actor["puppet"]:
-                    actor["animator"].play(deltatime)
+                    anim_status = actor["animator"].play(deltatime)
+                    # If playing a non-looping animation and it's finished, return to idle
+                    if anim_status != "RUNNING":
+                        actor["animator"].set_animation("idle")
                 # Set flipped status of the animator using the actor's flipped status
                 actor["animator"].set_flipped(actor["actor"].get_flipped())
                 # Blit actor onto screen if the timeout hasn't elapsed
