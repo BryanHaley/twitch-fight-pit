@@ -89,15 +89,12 @@ class Animation:
         self._flipped = False
     
     def play(self, deltatime):
-        if self._current_frame == self._frames-1:
-            if self._loop:
-                self.reset()
-            else:
-                return "SUCCESS"
         self._timer += deltatime
-        if self._timer > self._framerate*(self._current_frame+1):
+        if self._timer > self._framerate*(self._current_frame+1) and self._current_frame < self._frames-1:
             self._current_frame += 1
-        return "SUCCESS" if self._current_frame == self._frames and self._timer > self._framerate*(self._current_frame+1) else "RUNNING"
+        if self._current_frame == self._frames-1 and self._loop and self._timer >= self._framerate*self._frames:
+            self.reset()
+        return "SUCCESS" if self._current_frame == self._frames-1 and self._timer >= self._framerate*self._frames else "RUNNING"
     
     def reset(self):
         self._timer = 0
